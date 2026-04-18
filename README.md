@@ -48,6 +48,7 @@ All artifacts land in `scenario/{project}/`, giving you a self-contained, versio
 | [Bicep CLI](https://learn.microsoft.com/azure/azure-resource-manager/bicep/install)                             | Template compilation and linting          |
 | [Python 3.10+](https://www.python.org/)                                                                         | Diagram generation                        |
 | [Graphviz](https://graphviz.org/download/)                                                                      | Required by the `diagrams` Python library |
+| [GitHub CLI (`gh`)](https://cli.github.com/)                                                                     | Fork, branch, PR, and issue operations (required for contributing) |
 | An Azure subscription                                                                                           | Target for deployments                    |
 
 ### Recommended VS Code Extensions
@@ -179,11 +180,50 @@ add your own agents, skills, and coding standards to the workflow.
 
 ## Contributing
 
+We welcome scenario contributions from the community! There are two ways to contribute.
+
+### Prerequisites for Contributing
+
+| Requirement | Purpose |
+|---|---|
+| [GitHub CLI (`gh`)](https://cli.github.com/) | **Required.** The Contribute agent uses `gh` to fork the repo, create branches, open PRs, and file issues. Install and authenticate with `gh auth login` before contributing. |
+| Completed scenario (Steps 1–6) | Your scenario folder under `scenario/` must contain the required artifacts before contributing. |
+
+> **Why `gh`?** The contribution workflow needs to fork the upstream repo, push to your fork, and open cross-fork pull requests. The GitHub CLI handles all of this with a single authenticated session — no manual token configuration required.
+
+### Agent-Assisted (Recommended)
+
+After completing the agent workflow (Steps 1–6), invoke the **08-Contribute** agent
+in Copilot Chat. It will:
+
+1. **Validate** your scenario artifacts for completeness (required: `01-requirements.md`, `02-architecture-assessment.md`, `infra/main.bicep`, `azure.yaml`, `README.md`)
+2. **Fork** the repo via `gh repo fork` (idempotent — safe to run repeatedly)
+3. **Create a branch** named `contribute/{project-name}` on your fork
+4. **Stage and commit** your scenario with a conventional commit (`feat(scenario): add {project-name} demo scenario`)
+5. **Open a draft PR** against the upstream `main` branch using the Scenario Contribution template
+6. **Optionally create a tracking GitHub Issue** for maintainer visibility
+
+The agent performs a sensitive-data check before committing — it will refuse to proceed if `.azure/`, `.env`, `bin/`, `obj/`, `publish/`, or `applogs/` files would be staged.
+
+### Manual
+
+1. Install and authenticate the [GitHub CLI](https://cli.github.com/): `gh auth login`
+2. Fork the repo and create a branch: `contribute/{your-scenario-name}`
+3. Add your scenario folder under `scenario/` with the required artifacts:
+   - `01-requirements.md`, `02-architecture-assessment.md`
+   - `infra/main.bicep` + modules, `azure.yaml`, `README.md`
+4. Ensure no sensitive files are included (`.azure/`, `.env`, `bin/`, `obj/`)
+5. Open a draft PR using the **Scenario Contribution** template
+
+### Project Structure
+
 1. **Agents** live in `.github/agents/` — each file defines one workflow step
 2. **Skills** live in `.github/skills/` — shared knowledge that agents reference
 3. **Instructions** live in `.github/instructions/` — file-type specific coding standards
 
-To modify agent behavior, edit the corresponding `.agent.md` file. To change patterns or defaults that apply across agents, update `SKILL.md` or the relevant instruction file.
+To modify agent behavior, edit the corresponding `.agent.md` file. To change
+patterns or defaults that apply across agents, update `SKILL.md` or the
+relevant instruction file.
 
 ## License
 

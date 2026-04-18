@@ -30,6 +30,7 @@
     "npm run lint:artifact-templates": true,
     "bicep": true,
     "&": true,
-    "Test-Path": true
+    "Test-Path": true,
+    "dotnet build": true
   }
 }

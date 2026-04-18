@@ -13,6 +13,7 @@ agents:
     "05b-Development",
     "06-Deploy",
     "07-DemoGuide",
+    "08-Contribute",
   ]
 tools:
   [
@@ -239,9 +240,29 @@ Artifact: scenario/{project}/06-deployment-summary.md
 Artifact: scenario/{project}/demoguide/demoguide.md
 Screenshots: scenario/{project}/demoguide/images/*.png (MANDATORY)
 ✅ Playwright screenshots captured or fallback documented
-✅ Workflow complete.
-➡️ Mark workflow complete
+➡️ Continue to Contribution offer (Checkpoint 6)
 ```
+
+### Checkpoint 6: Contribution Offer (USER CHOICE)
+
+After all artifacts are generated (Steps 1–6 complete), offer the contributor
+the option to submit their scenario to the upstream project:
+
+```text
+🎉 WORKFLOW COMPLETE — ALL ARTIFACTS GENERATED
+Scenario: scenario/{project}/
+
+Would you like to contribute this scenario to the project?
+  1. Yes — fork, branch, commit, and open a draft PR
+  2. No  — keep the scenario local only
+```
+
+- If **yes**: delegate to the `08-Contribute` agent with the project folder name.
+- If **no**: mark the workflow complete.
+
+> [!NOTE]
+> This is a **user-choice** handoff, not automatic. Never auto-trigger
+> the Contribute agent without the user's explicit consent.
 
 ## Subagent Delegation
 
@@ -256,6 +277,7 @@ Use `#runSubagent` for each workflow step:
 | 4b   | Development  | Scaffold .NET 10 sample webapp with {industry} seed data, wire into azure.yaml, validate build. **Skip if VM-only or user declined.**                                                                                 |
 | 5    | Deploy       | Run what-if analysis, prompt user, deploy to Azure with `azd up`, generate 06-deployment-summary.md. **MUST attempt actual deployment. On failure, report back so executionlead can prompt the user for a decision.** |
 | 6    | DemoGuide    | Generate audience-aware demo runbook with **Playwright screenshots** of deployed resources. **VERIFY screenshots exist in `demoguide/images/` before marking complete.**                                              |
+| 7    | Contribute   | Validate artifacts, fork repo, create branch, commit scenario, open draft PR, optionally create tracking issue. **User must explicitly opt in — never auto-trigger.**                                                  |
 
 ## Starting a New Project
 
@@ -291,6 +313,8 @@ Use `#runSubagent` for each workflow step:
 | 5    | `06-deployment-summary.md`                 | Exists?                                          |
 | 6    | `/demoguide/demoguide.md`                  | Required                                         |
 | 6    | `demoguide/images/*.png`                   | **MANDATORY** — screenshots captured or fallback |
+| 7    | Draft PR on upstream repo                  | User opted in?                                   |
+| 7    | GitHub Issue (optional)                    | User opted in?                                   |
 
 ## Model Selection
 
@@ -302,3 +326,4 @@ Use `#runSubagent` for each workflow step:
 | Development  | Opus 4.6                 | .NET code gen      |
 | Deploy       | Opus 4.6                 | Deployment exec    |
 | DemoGuide    | GPT-5.3-Codex            | Documentation gen  |
+| Contribute   | Opus 4.6                 | Git + GitHub ops   |

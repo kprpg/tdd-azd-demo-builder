@@ -75,6 +75,11 @@ scratch/
 scenarios/S06-sbom-generator/sample-app/
 freshness-report.json
 
+# Publish output and deployment artifacts
+**/publish/
+**/applogs/
+**/deploy.zip
+
 # Baseline snapshots (local working data for context optimizer)
 scenario/_baselines/
 
@@ -89,7 +94,9 @@ crash.*.log
 .infracost/
 # DO NOT ignore .terraform.lock.hcl — it must be committed for reproducible provider versions
 
-# Demo Scenario folder
+# Demo Scenario folder — ignored by default so agent-generated scenarios
+# stay local. The 08-Contribute agent uses `git add -f` to selectively
+# stage a single scenario for cross-fork PRs.
 scenario/
 
 # Playwright screenshot artifacts
