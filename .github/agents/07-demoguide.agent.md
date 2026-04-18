@@ -218,6 +218,14 @@ for resource overviews and each demo step.
 
 ### Phase 7: Artifact Generation
 
+> [!CAUTION]
+> **HARD RULE — OUTPUT PATH**
+>
+> The demo guide MUST be written to `scenario/{project}/demoguide/demoguide.md`.
+> Do NOT create the file at the scenario root (e.g., `08-demo-guide.md`).
+> The `demoguide/` subfolder is the canonical location for both the markdown
+> file and its `images/` directory.
+
 Generate `scenario/{project}/demoguide/demoguide.md` following the H2 structure
 from the azure-artifacts skill exactly.
 Ensure all Playwright-captured screenshots from Phase 6 are embedded

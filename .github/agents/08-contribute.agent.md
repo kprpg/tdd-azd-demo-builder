@@ -59,7 +59,7 @@ cross-fork draft PR, and optionally filing a tracking GitHub Issue.
 ### DO
 
 - ✅ Validate all required artifacts exist before touching git
-- ✅ Stage **only** `infra/`, `demoguide/`, `azure.yaml`, and `README.md` — all other scenario files stay in the contributor's fork
+- ✅ Stage **only** `infra/`, `demoguide/`, `src/`, `azure.yaml`, and `README.md` — all other scenario files stay in the contributor's fork
 - ✅ Scan for sensitive files (`.azure/`, `.env`, `bin/`, `obj/`, `publish/`, `applogs/`) and **refuse to proceed** if they would be staged
 - ✅ Use `gh repo fork` (idempotent — reuses existing fork) for fork creation
 - ✅ Prefer GitHub MCP tools for PR and Issue creation; fall back to `gh` CLI only when MCP is unavailable
@@ -70,8 +70,8 @@ cross-fork draft PR, and optionally filing a tracking GitHub Issue.
 ### DON'T
 
 - ❌ Commit without completing artifact validation first
-- ❌ Stage files outside the four PR-scoped artifact groups (`infra/`, `demoguide/`, `azure.yaml`, `README.md`)
-- ❌ Include requirements, architecture assessments, diagrams, implementation plans, src/, or other working files in the PR
+- ❌ Stage files outside the five PR-scoped artifact groups (`infra/`, `demoguide/`, `src/`, `azure.yaml`, `README.md`)
+- ❌ Include requirements, architecture assessments, diagrams, implementation plans, or other working files in the PR
 - ❌ Include deployment state (`.azure/`), build outputs (`bin/`, `obj/`, `publish/`), logs (`applogs/`), archives (`*.zip`), or environment files (`.env`)
 - ❌ Force-push or rewrite history
 - ❌ Create the PR as ready-for-review — always use draft so the contributor can inspect first
@@ -83,7 +83,7 @@ cross-fork draft PR, and optionally filing a tracking GitHub Issue.
 
 ### Phase 0: Parse Input
 
-1. Accept the project folder name from the user or the executionlead handoff
+1. Accept the project folder name from the user or the Conductor handoff
 2. Verify `scenario/{project}/` exists on disk
 3. Derive variables:
    - `PROJECT` = the folder name (e.g., `sentinel-threat-detection`)
@@ -94,9 +94,9 @@ cross-fork draft PR, and optionally filing a tracking GitHub Issue.
 Scan `scenario/{PROJECT}/` and report a completeness checklist.
 
 > [!IMPORTANT]
-> **Only four artifacts are committed to the PR** — `infra/`, `demoguide/`,
-> `azure.yaml`, and `README.md`. All other files (requirements, architecture
-> assessment, diagrams, implementation plans, src/, etc.) stay in the
+> **Only five artifact groups are committed to the PR** — `infra/`, `demoguide/`,
+> `src/`, `azure.yaml`, and `README.md`. All other files (requirements, architecture
+> assessment, diagrams, implementation plans, etc.) stay in the
 > contributor's fork for reference but are **not** pushed to upstream.
 
 #### Committed Artifacts (HARD GATE — all must pass)
@@ -109,6 +109,7 @@ These are the artifacts that will be staged, committed, and included in the PR:
 | `infra/modules/`  | Directory exists (at least one module) |
 | `azure.yaml`      | File exists and contains `name:` field |
 | `README.md`       | File exists and is non-empty           |
+| `src/`            | Directory exists (if webapp scenario)  |
 
 If **any** committed artifact is missing, report the failure and **stop**.
 Do not proceed to Phase 2.
@@ -137,7 +138,7 @@ remain in the contributor's fork and are **not** included in the PR:
 | `05-implementation-reference.md`           | ⚠️ WARN            |
 | `06-deployment-summary.md`                 | ⚠️ WARN            |
 | `07-webapp-summary.md`                     | ⚠️ WARN            |
-| `src/` directory                           | ⚠️ WARN            |
+
 
 #### Sensitive Data Scan (HARD GATE)
 
@@ -163,6 +164,7 @@ patterns. If it does not, **stop and ask the user to update `.gitignore` first**
 
 Committed to PR:
   ✅ infra/main.bicep + modules/
+  ✅ src/ (sample webapp)
   ✅ azure.yaml
   ✅ README.md
   ✅ demoguide/demoguide.md
@@ -238,15 +240,16 @@ Result: PASS — ready for contribution
 
    ```bash
    # Force-add is required because .gitignore ignores scenario/ at the root.
-   # Only stage the four artifact groups that belong in the PR.
+   # Only stage the five artifact groups that belong in the PR.
    git add -f scenario/{PROJECT}/infra/
    git add -f scenario/{PROJECT}/demoguide/
+   git add -f scenario/{PROJECT}/src/
    git add -f scenario/{PROJECT}/azure.yaml
    git add -f scenario/{PROJECT}/README.md
    ```
 
    > All other scenario files (requirements, architecture assessment, diagrams,
-   > implementation plans, src/, etc.) remain in the contributor's fork only.
+   > implementation plans, etc.) remain in the contributor's fork only.
 
 2. **Verify no sensitive files are staged**:
 

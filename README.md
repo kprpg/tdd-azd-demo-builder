@@ -6,11 +6,11 @@ An agent-driven workflow for building, deploying, and demonstrating Azure infras
 
 [Trainer-Demo-Deploy](https://aka.ms/trainer-demo-deploy) Azure Demo Builder automates the end-to-end lifecycle of Azure demo environments. Describe the Azure scenario you want to build in natural language, and a pipeline of specialized AI agents handles requirements gathering, architecture design, Bicep code generation, deployment, and demo guide creation — all within VS Code.
 
-Instead of manually writing Bicep templates, configuring `azd`, and preparing demo scripts, you interact with a single **Execution Lead** agent that orchestrates six specialized agents through the full workflow.
+Instead of manually writing Bicep templates, configuring `azd`, and preparing demo scripts, you interact with a single **Conductor** agent that orchestrates six specialized agents through the full workflow.
 
 ## How It Works
 
-The workflow is a six-step pipeline. Each step is handled by a dedicated agent that produces versioned artifacts in `scenario/{project}/`. The Execution Lead coordinates handoffs automatically.
+The workflow is a six-step pipeline. Each step is handled by a dedicated agent that produces versioned artifacts in `scenario/{project}/`. The Conductor coordinates handoffs automatically.
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 
 ### 4. Open Copilot Chat and Run
 
-Open the Copilot Chat panel (`Ctrl+Shift+I`), select the **01-executionlead** agent, and describe your scenario. The Execution Lead handles everything from there.
+Open the Copilot Chat panel (`Ctrl+Shift+I`), select the **01-conductor** agent, and describe your scenario. The Conductor handles everything from there.
 
 #### Example Prompt
 
@@ -124,7 +124,7 @@ The agent will:
 ```
 .github/
 ├── agents/                    # Agent definitions (one per workflow step)
-│   ├── 01-executionlead.agent.md
+│   ├── 01-conductor.agent.md
 │   ├── 02-validation.agent.md
 │   ├── 03-architect.agent.md
 │   ├── 04-diagrammer.agent.md
