@@ -6,34 +6,45 @@ An agent-driven workflow for building, deploying, and demonstrating Azure infras
 
 [Trainer-Demo-Deploy](https://aka.ms/trainer-demo-deploy) Azure Demo Builder automates the end-to-end lifecycle of Azure demo environments. Describe the Azure scenario you want to build in natural language, and a pipeline of specialized AI agents handles requirements gathering, architecture design, Bicep code generation, deployment, and demo guide creation — all within VS Code.
 
-Instead of manually writing Bicep templates, configuring `azd`, and preparing demo scripts, you interact with a single **Conductor** agent that orchestrates six specialized agents through the full workflow.
+Instead of manually writing Bicep templates, configuring `azd`, and preparing demo scripts, you interact with a single **Conductor** agent that orchestrates specialized agents through the full workflow.
 
 ## How It Works
 
-The workflow is a six-step pipeline. Each step is handled by a dedicated agent that produces versioned artifacts in `scenario/{project}/`. The Conductor coordinates handoffs automatically.
+The workflow is a multi-step pipeline. Each step is handled by a dedicated agent that produces versioned artifacts in `scenario/{project}/`. The Conductor coordinates handoffs automatically.
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  1. Require-│───▶│  2. Archi- │───▶│  3. Design  │
-│    ments    │    │    tect     │    │  (Diagrams) │
-└─────────────┘    └─────────────┘    └─────────────┘
-                                            │
-       ┌────────────────────────────────────┘
-       ▼
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   4. Bicep  │───▶│  5. Deploy │───▶│ 6. Demo     │
-│  (IaC Gen)  │    │  (azd up)   │    │    Guide    │
-└─────────────┘    └─────────────┘    └─────────────┘
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ 02. Require- │───▶│ 03. Archi-   │───▶│ 04. Design   │
+│    ments     │    │    tect      │    │  (Diagrams)  │
+└──────────────┘    └──────────────┘    └──────────────┘
+                                              │
+        ┌─────────────────────────────────────┘
+        ▼
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│  05. Bicep   │───▶│ 05b. Dev*    │───▶│  06. Deploy  │
+│  (IaC Gen)   │    │ (Sample App) │    │   (azd up)   │
+└──────────────┘    └──────────────┘    └──────────────┘
+                                              │
+        ┌─────────────────────────────────────┘
+        ▼
+┌──────────────┐    ┌──────────────┐
+│  07. Demo    │───▶│ 08. Contri-  │
+│    Guide     │    │   bute*      │
+└──────────────┘    └──────────────┘
+
+* = conditional / user-invoked
 ```
 
-| Step | Agent           | What It Does                                                   | Key Output                                            |
-| ---- | --------------- | -------------------------------------------------------------- | ----------------------------------------------------- |
-| 1    | **Validations** | Parses your scenario description into structured requirements  | `01-requirements.md`                                  |
-| 2    | **Architect**   | Recommends Azure services, SKUs, and documents trade-offs      | `02-architecture-assessment.md`                       |
-| 3    | **Diagrammer**  | Generates Python-based architecture diagrams and ADRs          | `03-architect-diagram.py`, `03-architect-diagram.png` |
-| 4    | **Bicep**       | Runs governance discovery, generates AVM-first Bicep templates | `infra/main.bicep`, `04-implementation-plan.md`       |
-| 5    | **Deploy**      | Runs `azd up` with what-if analysis and validates deployment   | `06-deployment-summary.md`                            |
-| 6    | **DemoGuide**   | Produces an audience-aware demo runbook with talking points    | `demoguide/demoguide.md.md`                           |
+| Step | Agent            | What It Does                                                   | Key Output                                            |
+| ---- | ---------------- | -------------------------------------------------------------- | ----------------------------------------------------- |
+| 02   | **Validations**  | Parses your scenario description into structured requirements  | `01-requirements.md`                                  |
+| 03   | **Architect**    | Recommends Azure services, SKUs, and documents trade-offs      | `02-architecture-assessment.md`                       |
+| 04   | **Diagrammer**   | Generates Python-based architecture diagrams and ADRs          | `03-architect-diagram.py`, `03-architect-diagram.png` |
+| 05   | **Bicep**        | Runs governance discovery, generates AVM-first Bicep templates | `infra/main.bicep`, `04-implementation-plan.md`       |
+| 05b  | **Development**  | Scaffolds a .NET 10 sample webapp with industry seed data      | `src/`, `07-webapp-summary.md`                        |
+| 06   | **Deploy**       | Runs `azd up` with what-if analysis and validates deployment   | `06-deployment-summary.md`                            |
+| 07   | **DemoGuide**    | Produces an audience-aware demo runbook with talking points    | `demoguide/demoguide.md`                              |
+| 08   | **Contribute**   | Publishes scenario to a standalone repo and registers upstream | Standalone repo + registry draft PR                   |
 
 All artifacts land in `scenario/{project}/`, giving you a self-contained, version-controlled demo package.
 
@@ -129,8 +140,10 @@ The agent will:
 │   ├── 03-architect.agent.md
 │   ├── 04-diagrammer.agent.md
 │   ├── 05-bicep.agent.md
+│   ├── 05b-development.agent.md
 │   ├── 06-deploy.agent.md
-│   └── 07-demoguide.agent.md
+│   ├── 07-demoguide.agent.md
+│   └── 08-contribute.agent.md
 ├── instructions/              # File-type coding standards (Bicep, Markdown, Python, etc.)
 └── skills/                    # Reusable knowledge consumed by agents
     ├── SKILL.md               # Consolidated skill (defaults, AVM, patterns, diagrams)
@@ -146,8 +159,9 @@ scenario/                      # Generated demo projects (one folder per scenari
 │   ├── 03-architect-diagram.py
 │   ├── 04-implementation-plan.md
 │   ├── 06-deployment-summary.md
-│   ├── /demoguide/demoguide.md
+│   ├── demoguide/demoguide.md
 │   ├── azure.yaml
+│   ├── src/                   # Sample webapp (if generated)
 │   └── infra/
 │       ├── main.bicep
 │       ├── main.bicepparam
@@ -180,40 +194,36 @@ add your own agents, skills, and coding standards to the workflow.
 
 ## Contributing
 
-We welcome scenario contributions from the community! There are two ways to contribute.
+We welcome scenario contributions from the community! The contribution model publishes each scenario as a **standalone `azd`-compatible repo** in your GitHub account and registers it in the upstream project's scenario registry.
 
 ### Prerequisites for Contributing
 
 | Requirement | Purpose |
 |---|---|
-| [GitHub CLI (`gh`)](https://cli.github.com/) | **Required.** The Contribute agent uses `gh` to fork the repo, create branches, open PRs, and file issues. Install and authenticate with `gh auth login` before contributing. |
+| [GitHub CLI (`gh`)](https://cli.github.com/) | **Required.** The Contribute agent uses `gh` to create repos, fork the upstream project, and open PRs. Install and authenticate with `gh auth login` before contributing. |
 | Completed scenario (Steps 1–6) | Your scenario folder under `scenario/` must contain the required artifacts before contributing. |
-
-> **Why `gh`?** The contribution workflow needs to fork the upstream repo, push to your fork, and open cross-fork pull requests. The GitHub CLI handles all of this with a single authenticated session — no manual token configuration required.
 
 ### Agent-Assisted (Recommended)
 
 After completing the agent workflow (Steps 1–6), invoke the **08-Contribute** agent
 in Copilot Chat. It will:
 
-1. **Validate** your scenario artifacts for completeness (required: `01-requirements.md`, `02-architecture-assessment.md`, `infra/main.bicep`, `azure.yaml`, `README.md`)
-2. **Fork** the repo via `gh repo fork` (idempotent — safe to run repeatedly)
-3. **Create a branch** named `contribute/{project-name}` on your fork
-4. **Stage and commit** your scenario with a conventional commit (`feat(scenario): add {project-name} demo scenario`)
-5. **Open a draft PR** against the upstream `main` branch using the Scenario Contribution template
-6. **Optionally create a tracking GitHub Issue** for maintainer visibility
+1. **Validate** your scenario artifacts for completeness (`infra/main.bicep`, `azure.yaml`, `README.md`)
+2. **Create a standalone repo** named `tdd-azd-{scenario}` in your GitHub account (asks for approval first)
+3. **Populate the repo** with publishable artifacts (`infra/`, `src/`, `demoguide/`, `azure.yaml`, `README.md`) as a flat `azd`-compatible project
+4. **Register upstream** by opening a draft PR that adds your scenario to `scenarios/registry.json`
 
-The agent performs a sensitive-data check before committing — it will refuse to proceed if `.azure/`, `.env`, `bin/`, `obj/`, `publish/`, or `applogs/` files would be staged.
+The agent performs a sensitive-data check before copying — it will refuse to proceed if `.azure/`, `.env`, `bin/`, `obj/`, `publish/`, or `applogs/` files would be included.
 
 ### Manual
 
 1. Install and authenticate the [GitHub CLI](https://cli.github.com/): `gh auth login`
-2. Fork the repo and create a branch: `contribute/{your-scenario-name}`
-3. Add your scenario folder under `scenario/` with the required artifacts:
-   - `01-requirements.md`, `02-architecture-assessment.md`
-   - `infra/main.bicep` + modules, `azure.yaml`, `README.md`
+2. Create a public repo named `tdd-azd-{your-scenario-name}` in your GitHub account
+3. Copy the publishable artifacts from `scenario/{project}/` to the repo root:
+   - `infra/` (Bicep templates), `azure.yaml`, `README.md`
+   - `src/` (if webapp), `demoguide/` (if demo guide was generated)
 4. Ensure no sensitive files are included (`.azure/`, `.env`, `bin/`, `obj/`)
-5. Open a draft PR using the **Scenario Contribution** template
+5. Fork this repo, add your scenario to `scenarios/registry.json`, and open a draft PR
 
 ### Project Structure
 

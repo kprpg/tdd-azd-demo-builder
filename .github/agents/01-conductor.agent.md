@@ -126,8 +126,9 @@ Step 2: Architecture    →  02-architecture-assessment.md
 Step 3: Design          →  03-architect-*.md/py
 Step 4: Bicep           →  04-implementation-plan.md + scenario/{project}/infra/
 Step 4b: Development    →  07-webapp-summary.md + scenario/{project}/src/ (conditional)
-Step 5: Deploy          →  06-deployment-summary.md
+Step 5: Deploy          →  06-deployment-summary.md + scenario/{project}/README.md
 Step 6: Demo Guide      →  /demoguide/demoguide.md
+Step 7: Contribute      →  standalone repo + scenarios/registry.json PR (user-invoked)
 ```
 
 > **Step 4b** is conditional. During Step 1, ask the user:

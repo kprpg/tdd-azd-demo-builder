@@ -1,6 +1,6 @@
 ---
 name: 08-Contribute
-description: Validates scenario artifacts, forks the upstream repo, creates a contribution branch, commits the scenario, opens a cross-fork draft PR, and optionally creates a tracking GitHub Issue for project maintainers to review.
+description: Publishes a completed scenario to a standalone repo in the contributor's GitHub account and registers it in the upstream project's scenario registry via a cross-fork PR.
 model: "Claude Opus 4.6"
 user-invokable: true
 argument-hint: Provide the scenario project folder name to contribute (e.g., sentinel-threat-detection)
@@ -40,12 +40,12 @@ tools:
 
 # Contribute Agent
 
-**Step 7** (optional, user-invoked) of the workflow:
-`requirements → architect → design → bicep → deploy → demoguide → contribute`
+**Step 8** (optional, user-invoked) of the workflow:
+`requirements → architect → design → bicep → [development] → deploy → demoguide → contribute`
 
-Packages a completed scenario for open-source contribution by validating
-artifacts, forking the upstream repo, creating a branch, committing, opening a
-cross-fork draft PR, and optionally filing a tracking GitHub Issue.
+Publishes a completed scenario as a standalone `azd`-compatible repo in the
+contributor's GitHub account, then registers it in the upstream project's
+scenario registry via a cross-fork PR.
 
 ## MANDATORY: Read Skills First
 
@@ -59,23 +59,20 @@ cross-fork draft PR, and optionally filing a tracking GitHub Issue.
 ### DO
 
 - ✅ Validate all required artifacts exist before touching git
-- ✅ Stage **only** `infra/`, `demoguide/`, `src/`, `azure.yaml`, and `README.md` — all other scenario files stay in the contributor's fork
-- ✅ Scan for sensitive files (`.azure/`, `.env`, `bin/`, `obj/`, `publish/`, `applogs/`) and **refuse to proceed** if they would be staged
-- ✅ Use `gh repo fork` (idempotent — reuses existing fork) for fork creation
+- ✅ Ask the user for explicit approval before creating a repo in their account
+- ✅ Copy only publishable artifacts to the standalone repo (`infra/`, `src/`, `demoguide/`, `azure.yaml`, `README.md`)
+- ✅ Scan for sensitive files (`.azure/`, `.env`, `bin/`, `obj/`, `publish/`, `applogs/`) and **refuse to proceed** if they would be included
 - ✅ Prefer GitHub MCP tools for PR and Issue creation; fall back to `gh` CLI only when MCP is unavailable
-- ✅ Create the PR as a **draft** by default
-- ✅ Use a single atomic commit per scenario
-- ✅ Present the user with a clear summary at the end (branch, PR URL, issue URL, next steps)
+- ✅ Create the registry PR as a **draft** by default
+- ✅ Present the user with a clear summary at the end (standalone repo URL, PR URL, next steps)
 
 ### DON'T
 
-- ❌ Commit without completing artifact validation first
-- ❌ Stage files outside the five PR-scoped artifact groups (`infra/`, `demoguide/`, `src/`, `azure.yaml`, `README.md`)
-- ❌ Include requirements, architecture assessments, diagrams, implementation plans, or other working files in the PR
+- ❌ Create a repo in the user's account without explicit approval
+- ❌ Copy requirements, architecture assessments, diagrams, implementation plans, or other working files to the standalone repo
 - ❌ Include deployment state (`.azure/`), build outputs (`bin/`, `obj/`, `publish/`), logs (`applogs/`), archives (`*.zip`), or environment files (`.env`)
 - ❌ Force-push or rewrite history
-- ❌ Create the PR as ready-for-review — always use draft so the contributor can inspect first
-- ❌ Auto-create a GitHub Issue without asking the contributor
+- ❌ Create the registry PR as ready-for-review — always use draft
 
 ---
 
@@ -87,58 +84,34 @@ cross-fork draft PR, and optionally filing a tracking GitHub Issue.
 2. Verify `scenario/{project}/` exists on disk
 3. Derive variables:
    - `PROJECT` = the folder name (e.g., `sentinel-threat-detection`)
-   - `BRANCH` = `contribute/{PROJECT}`
+   - Read `scenario/{PROJECT}/azure.yaml` and extract the `name:` field
+   - `REPO_NAME` = `tdd-azd-{name}` (from azure.yaml, e.g., `tdd-azd-sentinel-threat-detection`)
 
 ### Phase 1: Artifact Validation (Pre-Flight)
 
 Scan `scenario/{PROJECT}/` and report a completeness checklist.
 
-> [!IMPORTANT]
-> **Only five artifact groups are committed to the PR** — `infra/`, `demoguide/`,
-> `src/`, `azure.yaml`, and `README.md`. All other files (requirements, architecture
-> assessment, diagrams, implementation plans, etc.) stay in the
-> contributor's fork for reference but are **not** pushed to upstream.
+#### Publishable Artifacts (HARD GATE — all must pass)
 
-#### Committed Artifacts (HARD GATE — all must pass)
+These artifacts will be copied to the standalone repo:
 
-These are the artifacts that will be staged, committed, and included in the PR:
+| Artifact           | Check                                  |
+| ------------------ | -------------------------------------- |
+| `infra/main.bicep` | File exists                            |
+| `infra/modules/`   | Directory exists (at least one module) |
+| `azure.yaml`       | File exists and contains `name:` field |
+| `README.md`        | File exists and is non-empty           |
 
-| Artifact          | Check                                  |
-| ----------------- | -------------------------------------- |
-| `infra/main.bicep`| File exists                            |
-| `infra/modules/`  | Directory exists (at least one module) |
-| `azure.yaml`      | File exists and contains `name:` field |
-| `README.md`       | File exists and is non-empty           |
-| `src/`            | Directory exists (if webapp scenario)  |
+If **any** hard-gate artifact is missing, report the failure and **stop**.
 
-If **any** committed artifact is missing, report the failure and **stop**.
-Do not proceed to Phase 2.
-
-#### Committed Artifacts (RECOMMENDED — warn if missing, non-blocking)
+#### Publishable Artifacts (RECOMMENDED — warn if missing, non-blocking)
 
 | Artifact                   | Status if Missing |
 | -------------------------- | ----------------- |
+| `src/`                     | ⚠️ WARN (no webapp) |
 | `demoguide/demoguide.md`   | ⚠️ WARN            |
 | `demoguide/images/*.png`   | ⚠️ WARN            |
 | `infra/main.bicepparam`    | ⚠️ WARN            |
-
-#### Local-Only Artifacts (validated but NOT committed)
-
-These files are checked to confirm the scenario was fully generated, but they
-remain in the contributor's fork and are **not** included in the PR:
-
-| Artifact                                   | Status if Missing |
-| ------------------------------------------ | ----------------- |
-| `01-requirements.md`                       | ⚠️ WARN            |
-| `02-architecture-assessment.md`            | ⚠️ WARN            |
-| `03-architect-diagram.py` + `.png`         | ⚠️ WARN            |
-| `03-architect-runtime-diagram.py` + `.png` | ⚠️ WARN            |
-| `03-architect-adr.md`                      | ⚠️ WARN            |
-| `04-implementation-plan.md`                | ⚠️ WARN            |
-| `05-implementation-reference.md`           | ⚠️ WARN            |
-| `06-deployment-summary.md`                 | ⚠️ WARN            |
-| `07-webapp-summary.md`                     | ⚠️ WARN            |
-
 
 #### Sensitive Data Scan (HARD GATE)
 
@@ -152,9 +125,8 @@ Check whether any of these paths exist inside `scenario/{PROJECT}/`:
 - `**/.env` files
 - `applogs/` directory
 
-If **any** are found, warn the user and confirm they will be excluded via
-`.gitignore` before proceeding. Verify the root `.gitignore` covers these
-patterns. If it does not, **stop and ask the user to update `.gitignore` first**.
+If **any** are found, warn the user and confirm they will be excluded before
+proceeding.
 
 #### Report Format
 
@@ -162,32 +134,129 @@ patterns. If it does not, **stop and ask the user to update `.gitignore` first**
 📋 ARTIFACT VALIDATION — {PROJECT}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Committed to PR:
+Publishable artifacts:
   ✅ infra/main.bicep + modules/
-  ✅ src/ (sample webapp)
   ✅ azure.yaml
   ✅ README.md
+  ✅ src/ (sample webapp)
   ✅ demoguide/demoguide.md
   ⚠️  demoguide/images/*.png — MISSING (no screenshots captured)
 
-Local-only (in fork, not in PR):
-  ✅ 01-requirements.md
-  ✅ 02-architecture-assessment.md
-  ✅ 03-architect-diagram.py + .png
-  ⚠️  06-deployment-summary.md — MISSING (scenario was not deployed)
-
 Sensitive Data:
   ✅ No .azure/, .env, bin/, obj/, publish/, applogs/ detected
-     (or: confirmed excluded by .gitignore)
 
 Result: PASS — ready for contribution
 ```
 
-### Phase 2: Fork & Branch Creation
+### Phase 2: Create Standalone Repo (USER APPROVAL REQUIRED)
 
-> [!IMPORTANT]
-> The standard contribution model assumes the contributor does **not** have
-> write access to the upstream repo. All pushes go to the contributor's fork.
+> [!CAUTION]
+> **HARD RULE — You MUST ask the user for explicit approval before creating
+> the repo.** Never auto-create.
+
+1. **Get the contributor's GitHub username**:
+
+   ```bash
+   gh api user --jq '.login'
+   ```
+
+   Store as `CONTRIBUTOR`.
+
+2. **Present the repo creation plan**:
+
+   ```text
+   📦 STANDALONE REPO CREATION
+
+   Repo:   {CONTRIBUTOR}/{REPO_NAME}
+   Name:   {REPO_NAME}
+   Source:  scenario/{PROJECT}/
+
+   Artifacts to publish:
+     • infra/ (Bicep templates)
+     • src/ (sample webapp) — if exists
+     • demoguide/ (demo guide + screenshots) — if exists
+     • azure.yaml
+     • README.md
+
+   Shall I create this repo in your GitHub account? (yes/no)
+   ```
+
+3. **Create the repo** (only after user says yes):
+
+   ```bash
+   gh repo create {CONTRIBUTOR}/{REPO_NAME} --public --description "{description}" --clone
+   ```
+
+   Where `{description}` is extracted from `01-requirements.md` (first 1-2
+   sentences of the business context).
+
+   If the repo already exists, ask the user whether to overwrite or abort.
+
+### Phase 3: Populate Standalone Repo
+
+Copy scenario artifacts from `scenario/{PROJECT}/` to the standalone repo's
+root, promoting them from the nested scenario path to a flat `azd`-compatible
+structure:
+
+```
+scenario/{PROJECT}/infra/       →  {REPO_NAME}/infra/
+scenario/{PROJECT}/src/         →  {REPO_NAME}/src/          (if exists)
+scenario/{PROJECT}/demoguide/   →  {REPO_NAME}/demoguide/    (if exists)
+scenario/{PROJECT}/azure.yaml   →  {REPO_NAME}/azure.yaml
+scenario/{PROJECT}/README.md    →  {REPO_NAME}/README.md
+```
+
+The standalone repo should look like a fresh `azd init` project:
+
+```
+{REPO_NAME}/
+├── infra/
+│   ├── main.bicep
+│   ├── main.bicepparam
+│   └── modules/
+├── src/                    # If webapp scenario
+│   └── {ProjectName}.Web/
+├── demoguide/              # If demo guide was generated
+│   ├── demoguide.md
+│   └── images/
+├── azure.yaml
+└── README.md
+```
+
+**Steps:**
+
+1. Copy publishable artifacts to the cloned repo directory
+2. Create a `.gitignore` in the standalone repo (exclude `.azure/`, `bin/`,
+   `obj/`, `publish/`, `.env`, `applogs/`)
+3. Verify no sensitive files are present in the copy
+4. Stage all files:
+
+   ```bash
+   cd {REPO_NAME}
+   git add -A
+   ```
+
+5. Commit:
+
+   ```bash
+   git commit -m "feat: initial scenario — {PROJECT}" -m "{commit_body}"
+   ```
+
+   Where `{commit_body}` includes:
+   - Azure services used (from `02-architecture-assessment.md`)
+   - Whether a sample webapp is included
+   - Generated by Azure Demo Builder
+
+6. Push:
+
+   ```bash
+   git push origin main
+   ```
+
+### Phase 4: Register in Upstream Scenario Registry
+
+Create a cross-fork PR that adds the scenario to `scenarios/registry.json`
+in the upstream repo.
 
 1. **Detect the upstream repo** from the current git remote:
 
@@ -197,207 +266,142 @@ Result: PASS — ready for contribution
 
    Extract `{UPSTREAM_OWNER}/{REPO}` (e.g., `petender/tdd-azd-demo-builder`).
 
-2. **Ensure the contributor has a fork**:
+2. **Ensure the contributor has a fork** of the upstream repo:
 
    ```bash
    gh repo fork {UPSTREAM_OWNER}/{REPO} --clone=false --remote=false
    ```
 
-   This is idempotent — it reuses an existing fork if one exists.
-
-3. **Get the contributor's GitHub username**:
+3. **Configure remotes** on the demo-builder repo (not the standalone repo):
 
    ```bash
-   gh api user --jq '.login'
-   ```
+   # Switch back to the demo-builder repo working directory
+   cd {demo-builder-repo}
 
-   Store as `CONTRIBUTOR`.
-
-4. **Configure remotes** (if not already set):
-
-   ```bash
-   # Ensure 'upstream' points to the original repo
    git remote get-url upstream 2>/dev/null || git remote add upstream https://github.com/{UPSTREAM_OWNER}/{REPO}.git
-
-   # Ensure 'origin' points to the contributor's fork
    git remote set-url origin https://github.com/{CONTRIBUTOR}/{REPO}.git
    ```
 
-5. **Fetch and create the contribution branch**:
+4. **Create the registration branch**:
 
    ```bash
    git fetch upstream main
-   git checkout -b {BRANCH} upstream/main
+   git checkout -b contribute/{PROJECT} upstream/main
    ```
 
-   If the branch already exists locally, ask the user whether to reuse it
-   or create a fresh one.
-
-### Phase 3: Stage & Commit
-
-1. **Stage only the PR-scoped artifacts** using force-add to bypass the
-   top-level `scenario/` gitignore rule:
+5. **Read the existing registry** (or create it if first contribution):
 
    ```bash
-   # Force-add is required because .gitignore ignores scenario/ at the root.
-   # Only stage the five artifact groups that belong in the PR.
-   git add -f scenario/{PROJECT}/infra/
-   git add -f scenario/{PROJECT}/demoguide/
-   git add -f scenario/{PROJECT}/src/
-   git add -f scenario/{PROJECT}/azure.yaml
-   git add -f scenario/{PROJECT}/README.md
+   cat scenarios/registry.json
    ```
 
-   > All other scenario files (requirements, architecture assessment, diagrams,
-   > implementation plans, etc.) remain in the contributor's fork only.
+   If the file doesn't exist, initialize it as `{ "scenarios": [] }`.
 
-2. **Verify no sensitive files are staged**:
+6. **Add the new scenario entry** to the `scenarios` array:
+
+   ```json
+   {
+     "name": "{PROJECT}",
+     "repo": "https://github.com/{CONTRIBUTOR}/{REPO_NAME}",
+     "description": "{brief description from 01-requirements.md}",
+     "services": ["{service1}", "{service2}", "..."],
+     "hasWebapp": true,
+     "contributor": "{CONTRIBUTOR}",
+     "date": "{YYYY-MM-DD}"
+   }
+   ```
+
+   **Source data:**
+   - `name` — from `azure.yaml` `name:` field
+   - `repo` — the standalone repo URL from Phase 2
+   - `description` — first 1-2 sentences from `01-requirements.md`
+   - `services` — extracted from `02-architecture-assessment.md`
+   - `hasWebapp` — `true` if `src/` exists, `false` otherwise
+   - `contributor` — GitHub username
+   - `date` — current date
+
+7. **Stage and commit**:
 
    ```bash
-   git diff --cached --name-only | Select-String -Pattern '\.azure|\.env|/bin/|/obj/|/publish/|applogs|\.zip'
+   git add -f scenarios/registry.json
+   git commit -m "feat(registry): add {PROJECT} by @{CONTRIBUTOR}"
    ```
 
-   If any matches are found, **unstage them and warn the user**. Do not commit
-   until the staging area is clean.
-
-3. **Extract context for the commit body** by reading:
-   - `scenario/{PROJECT}/02-architecture-assessment.md` — extract the list of Azure services
-   - `scenario/{PROJECT}/azure.yaml` — extract the project `name` field
-   - Check if `scenario/{PROJECT}/src/` exists (webapp included?)
-   - Check if `scenario/{PROJECT}/06-deployment-summary.md` exists (deployed?)
-
-4. **Commit with a conventional message**:
+8. **Push to the contributor's fork**:
 
    ```bash
-   git commit -m "feat(scenario): add {PROJECT} demo scenario" -m "{commit_body}"
+   git push origin contribute/{PROJECT}
    ```
 
-   Where `{commit_body}` includes:
-   - Azure services used (comma-separated list)
-   - Whether a sample webapp is included
-   - Whether deployment was verified
-
-   Example:
-
-   ```text
-   Azure services: App Service, Key Vault, SQL Database, Log Analytics
-   Sample webapp: yes (.NET 10, healthcare industry)
-   Deployment verified: yes (06-deployment-summary.md present)
-   ```
-
-### Phase 4: Push & Create Cross-Fork PR
-
-1. **Push to the contributor's fork**:
-
-   ```bash
-   git push origin {BRANCH}
-   ```
-
-2. **Create a draft PR** using `gh` CLI (cross-fork PRs require CLI):
+9. **Create a draft PR** using `gh` CLI (cross-fork PRs require CLI):
 
    ```bash
    gh pr create \
      --repo {UPSTREAM_OWNER}/{REPO} \
-     --head {CONTRIBUTOR}:{BRANCH} \
+     --head {CONTRIBUTOR}:contribute/{PROJECT} \
      --base main \
      --draft \
-     --title "feat(scenario): add {PROJECT} demo scenario" \
+     --title "feat(registry): add {PROJECT} scenario" \
      --body "{pr_body}"
    ```
 
-   **PR body structure** (use the scenario-contribution PR template as a guide):
+   **PR body:**
 
    ```markdown
-   ## Scenario Overview
+   ## New Scenario Registration
 
-   <!-- Extracted from 01-requirements.md: project name, industry, business context -->
+   | Field       | Value |
+   |-------------|-------|
+   | Scenario    | {PROJECT} |
+   | Repo        | [{CONTRIBUTOR}/{REPO_NAME}](https://github.com/{CONTRIBUTOR}/{REPO_NAME}) |
+   | Services    | {comma-separated list} |
+   | Sample App  | {yes/no} |
+   | Contributor | @{CONTRIBUTOR} |
 
-   ## Architecture
+   ### What's in the standalone repo
 
-   <!-- Extracted from 02-architecture-assessment.md: services, SKUs, key patterns -->
+   - `infra/` — Bicep templates (AVM-first)
+   - `azure.yaml` — azd project configuration
+   - `README.md` — Quickstart deployment instructions
+   - `src/` — Sample webapp ({industry}) *(if applicable)*
+   - `demoguide/` — Demo runbook + screenshots *(if applicable)*
 
-   | Service | SKU | Purpose |
-   | ------- | --- | ------- |
-   | ...     | ... | ...     |
+   ### Deployment
 
-   ## Artifact Checklist (included in PR)
-
-   - [x] `infra/main.bicep` + modules
-   - [x] `azure.yaml`
-   - [x] `README.md`
-   - [ ] `demoguide/demoguide.md` (if missing, note why)
-   - [ ] `demoguide/images/*.png`
-
-   ## Deployment Status
-
-   <!-- "Verified" if 06-deployment-summary.md exists, "Not deployed" otherwise -->
-
-   ## Reviewer Guidance
-
-   1. Verify Bicep templates lint cleanly: `az bicep build -f scenario/{PROJECT}/infra/main.bicep`
-   2. Check `azure.yaml` follows naming convention: `name: tdd-azd-{project}`
-   3. Run `azd up` in a test subscription to validate end-to-end deployment
-   4. Review the demo guide for completeness and accuracy
+   ```bash
+   gh repo clone {CONTRIBUTOR}/{REPO_NAME}
+   cd {REPO_NAME}
+   azd init
+   azd up
    ```
 
-3. **Capture the PR URL** from the command output for the summary.
+   ### Reviewer Checklist
 
-### Phase 5: GitHub Issue (Optional)
+   - [ ] Verify standalone repo is accessible
+   - [ ] Run `azd up` in a test subscription
+   - [ ] Review demo guide for accuracy
+   - [ ] Merge this registry entry
+   ```
 
-After the PR is created, ask the contributor:
-
-> _"Would you like to create a tracking GitHub Issue for this scenario contribution?"_
-
-If yes:
-
-1. **Create the issue** using GitHub MCP tools (preferred) or `gh` CLI:
-
-   - **Title**: `New Scenario: {Project Title}` (extract project title from `01-requirements.md`)
-   - **Body**:
-
-     ```markdown
-     ## New Scenario Contribution
-
-     **Project**: {PROJECT}
-     **PR**: #{pr_number}
-     **Contributor**: @{CONTRIBUTOR}
-
-     ### Summary
-     <!-- 2-3 sentence overview from 01-requirements.md -->
-
-     ### Azure Services
-     <!-- Bullet list from 02-architecture-assessment.md -->
-
-     ### Checklist for Maintainers
-     - [ ] Review Bicep templates for AVM compliance
-     - [ ] Validate deployment in test subscription
-     - [ ] Review demo guide accuracy
-     - [ ] Merge PR
-     ```
-
-   - **Labels**: `new-scenario` (create the label if it doesn't exist)
-
-2. **Link the issue to the PR** by editing the PR body to append `Closes #{issue_number}`.
-
-### Phase 6: Contribution Summary
+### Phase 5: Contribution Summary
 
 Present the final summary to the contributor:
 
 ```text
-🎉 CONTRIBUTION SUBMITTED — {PROJECT}
+🎉 CONTRIBUTION COMPLETE — {PROJECT}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Branch:  {BRANCH}
-Fork:    {CONTRIBUTOR}/{REPO}
-PR:      {pr_url} (draft)
-Issue:   {issue_url} (if created)
+Standalone Repo:  https://github.com/{CONTRIBUTOR}/{REPO_NAME}
+Registry PR:      {pr_url} (draft)
+
+Your scenario is now:
+  ✅ Published as a standalone azd-compatible repo
+  ✅ Registered via PR for maintainer review
 
 Next Steps:
-1. Review the draft PR on GitHub to verify all artifacts look correct
-2. Mark the PR as "Ready for Review" when satisfied
-3. Project maintainers will review, run validation, and merge
-
-Thank you for contributing! 🙌
+1. Review the standalone repo on GitHub to verify all artifacts
+2. Mark the registry PR as "Ready for Review" when satisfied
+3. Maintainers will review, test deployment, and merge the registry entry
 ```
 
 ---
@@ -407,18 +411,20 @@ Thank you for contributing! 🙌
 | Scenario | Action |
 | --- | --- |
 | `gh` CLI not authenticated | Run `gh auth status` to diagnose. Guide the user through `gh auth login` |
-| Fork creation fails | Check if the user has a GitHub account and network access. Report the error |
-| Branch already exists on remote | Ask user: reuse existing branch (force-push) or create a new branch with a suffix |
+| Standalone repo already exists | Ask user: overwrite (delete + recreate) or abort |
+| Fork of upstream fails | Check if the user has a GitHub account and network access. Report the error |
+| Registry branch already exists on remote | Ask user: reuse existing branch or create a new branch with a suffix |
 | PR creation fails (403/422) | Check if the fork is up to date with upstream. Suggest `git fetch upstream main && git rebase upstream/main` |
-| Sensitive files detected in staging | Unstage them, warn the user, verify `.gitignore` covers the patterns |
+| Sensitive files detected in copy | Remove them from the standalone repo, warn the user |
 
 ## Resumption
 
-If the agent is re-invoked for a project that already has a contribution branch:
+If the agent is re-invoked for a project that already has a standalone repo:
 
-1. Check if a PR already exists for `{BRANCH}` via `gh pr list --head {CONTRIBUTOR}:{BRANCH} --repo {UPSTREAM_OWNER}/{REPO}`
-2. If a PR exists, report its status (open/draft/merged/closed) and ask the user what to do:
-   - Update the existing PR (add new commits)
-   - Close and recreate
-   - Skip contribution
-3. If no PR exists but the branch exists, ask whether to reuse the branch or start fresh
+1. Check if `{CONTRIBUTOR}/{REPO_NAME}` exists via `gh repo view {CONTRIBUTOR}/{REPO_NAME} --json name`
+2. If the repo exists, ask the user:
+   - Update the existing repo (overwrite with latest artifacts)
+   - Skip repo creation and only update the registry PR
+   - Abort
+3. Check if a registry PR already exists via `gh pr list --head {CONTRIBUTOR}:contribute/{PROJECT} --repo {UPSTREAM_OWNER}/{REPO}`
+4. If a PR exists, report its status and ask whether to update it or create a new one
