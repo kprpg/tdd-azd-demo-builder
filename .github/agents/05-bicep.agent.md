@@ -62,7 +62,7 @@ tools:
 
 # Bicep Agent
 
-**Step 4** of the workflow: `requirements → architect → design → [bicep] → deploy → demoguide`
+**Step 3** of the workflow: `requirements → architect → [bicep] → deploy → demoguide`
 
 This agent handles the full Bicep lifecycle: governance discovery, implementation
 planning, AVM-first code generation, and validation. After templates are validated,
@@ -73,13 +73,7 @@ the Deploy agent (Step 5) handles the actual Azure deployment.
 **Before doing ANY work**, read these skills:
 
 1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, AVM, Bicep patterns, artifacts, diagrams, demo guide, **azure.yaml naming convention**)
-2. **Read** the template files for your artifacts:
-   - `.github/skills/azure-artifacts/templates/04-implementation-plan.template.md`
-   - `.github/skills/azure-artifacts/templates/04-governance-constraints.template.md`
-   - `.github/skills/azure-artifacts/templates/04-preflight-check.template.md`
-   - `.github/skills/azure-artifacts/templates/05-implementation-reference.template.md`
-     Use as structural skeletons (replicate badges, TOC, navigation, attribution exactly).
-3. **Read** `.github/skills/microsoft-code-reference/SKILL.md` — verify AVM module parameters,
+2. **Read** `.github/skills/microsoft-code-reference/SKILL.md` — verify AVM module parameters,
    check API versions, find correct Bicep patterns via official docs
 4. **Read** `.github/instructions/bicep-policy-compliance.instructions.md` — governance
    compliance mandate, dynamic tag list, anti-patterns
@@ -96,13 +90,13 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 - ✅ Use REST API for policy discovery (includes management group-inherited policies)
 - ✅ Run governance discovery via REST API + ARG BEFORE planning or coding
 - ✅ Check AVM availability for EVERY resource via `mcp_bicep_list_avm_metadata`
-- ✅ Auto-select deployment strategy (phased for >5 resources, single otherwise) before generating the plan
-- ✅ Generate the implementation plan with YAML-structured task specs
-- ✅ Run preflight check BEFORE writing any Bicep code
+- ✅ Auto-select deployment strategy (phased for >5 resources, single otherwise) from governance + architecture context — no plan file needed
+- ✅ Plan implementation internally (YAML task specs in working context) — do NOT save to disk
+- ✅ Run preflight check BEFORE writing any Bicep code — results are internal, do NOT save to disk
 - ✅ Use AVM modules for EVERY resource that has one — never raw Bicep when AVM exists
 - ✅ Generate `uniqueSuffix` ONCE in `main.bicep`, pass to ALL modules
 - ✅ Apply baseline tags (`Environment`, `ManagedBy`, `Project`, `Owner`) plus any extras from governance
-- ✅ Parse `04-governance-constraints.json` and map every Deny policy to specific Bicep parameters
+- ✅ Map every Deny policy from governance discovery to specific Bicep parameters in-context — do NOT save governance findings to disk
 - ✅ Apply security baseline (TLS 1.2, HTTPS-only, no public blob access, managed identity)
 - ✅ Follow CAF naming conventions (from azure-defaults skill)
 - ✅ Use `take()` for length-constrained resources (Key Vault ≤24, Storage ≤24)
@@ -111,23 +105,17 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 - ✅ Use `principalType: 'User'` for the deployer role assignments (not `ServicePrincipal`)
 - ✅ Generate or update `scenario/{project}/azure.yaml` with `infra.path: ./infra` for AZD compatibility
 - ✅ Generate `.bicepparam` parameter file for each environment
-- ✅ If plan specifies phased deployment, add `phase` parameter to
-  `main.bicep` that conditionally deploys resource groups per phase
+- ✅ If strategy is phased: add `phase` parameter to `main.bicep` that conditionally deploys resource groups per phase
 - ✅ Run `bicep build` and `bicep lint` after generating templates
-- ✅ Save implementation reference to `05-implementation-reference.md`
-- ✅ Auto-generate Step 4 diagrams in the same run:
-  - `04-dependency-diagram.py` + `04-dependency-diagram.png`
-  - `04-runtime-diagram.py` + `04-runtime-diagram.png`
-    > [!CAUTION]
-    > These diagrams are **MANDATORY** deliverables. The Bicep step is NOT
-    > complete until both diagram PNGs exist on disk. Execute each `.py` file
-    > and verify the `.png` was created before proceeding.
-- ✅ Update `scenario/{project}/README.md` — mark Step 4 complete, add your artifacts (see azure-artifacts skill)
+- ✅ Generate runtime diagram: write `04-runtime-diagram.py`, execute it to produce `04-runtime-diagram.png`, then **immediately delete** `04-runtime-diagram.py`
+  > [!IMPORTANT]
+  > The `.py` source file is a temp artifact. Only the `.png` is kept.
+  > Delete the `.py` file after verifying the `.png` exists on disk.
 
 ### DON'T
 
 - ❌ Skip governance discovery — this is a HARD GATE, not optional
-- ❌ Start coding before the implementation plan is generated
+- ❌ Save governance constraints, implementation plan, preflight results, or implementation reference to disk — all are internal context only
 - ❌ Deploy RBAC-enabled resources without assigning the deployer data plane access
 - ❌ Write raw Bicep for resources with AVM modules available
 - ❌ Hardcode unique strings — always derive from `uniqueString(resourceGroup().id)`
@@ -141,6 +129,7 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 - ❌ Generate the implementation plan before selecting deployment strategy
 - ❌ Use `az policy assignment list` alone — it misses management group-inherited policies
 - ❌ Hardcode SKUs without AVM verification
+- ❌ Leave `04-runtime-diagram.py` on disk after the PNG is generated
 
 ## Prerequisites Check
 
@@ -175,8 +164,7 @@ Read for context:
 | `Modify`            | Azure auto-modifies — verify compatibility | Document expected modification — do NOT set conflicting |
 | `Disabled`          | Ignore                                     | No action required                                      |
 
-Save findings to `scenario/{project}/04-governance-constraints.md` and
-`scenario/{project}/04-governance-constraints.json` (machine-readable).
+Keep findings **in working context only** — do NOT save governance constraints to disk.
 
 ### Phase 2: AVM Module Verification
 
@@ -187,9 +175,9 @@ For EACH resource in the architecture:
 3. If no AVM → plan raw Bicep resource, run deprecation checks
 4. Document module path + version for the implementation plan
 
-### Phase 3: Implementation Plan Generation
+### Phase 3: Internal Implementation Planning
 
-Generate the structured implementation plan with these elements per resource:
+Build the implementation plan in working context (do NOT save to disk). Include:
 
 ```yaml
 - resource: "Key Vault"
@@ -204,56 +192,44 @@ Generate the structured implementation plan with these elements per resource:
   naming: "kv-{short}-{env}-{suffix}"
 ```
 
-Include:
+Plan elements:
 
 - Resource inventory with SKUs and dependencies
 - Module structure (`main.bicep` + `modules/`)
 - Implementation tasks in dependency order
-- **Deployment Phases** section (from automatic Phase 2.5 selection)
-- Python dependency diagram artifact (`04-dependency-diagram.py` + `.png`)
-- Python runtime flow diagram artifact (`04-runtime-diagram.py` + `.png`)
-
-> [!CAUTION]
-> **HARD GATE — DIAGRAMS ARE MANDATORY**
->
-> Both diagrams MUST be generated and their PNGs verified on disk before
-> the implementation plan is considered complete. Run each `.py` script
-> and check that the `.png` file exists. If generation fails, fix and retry.
-
-- Naming conventions table (from azure-defaults CAF section)
+- Deployment strategy (phased or single — decided in Phase 2)
+- Naming conventions (from azure-defaults CAF section)
 - Security configuration matrix
-- Estimated implementation time
 
-Present plan summary and continue automatically:
+Present a brief inline summary and continue automatically:
 
 ```text
-📝 Implementation Plan Complete
+📝 Plan Ready
 
 Resources: {count} | AVM Modules: {count} | Custom: {count}
 Governance: {blocker_count} blockers, {warning_count} warnings
 Deployment: {Phased (N phases) | Single}
 
-Proceed directly to code generation after publishing the summary.
+Proceeding to preflight and code generation.
 ```
 
-### Phase 4: Preflight Check (MANDATORY)
+### Phase 4: Internal Preflight Check (MANDATORY)
 
-Before writing ANY Bicep code, validate AVM compatibility:
+Before writing ANY Bicep code, validate AVM compatibility (results stay in working context — do NOT save to disk):
 
-1. For EACH resource in `04-implementation-plan.md`:
+1. For EACH resource in the internal plan:
    - Query `mcp_bicep_list_avm_metadata` for AVM availability
    - If AVM exists: query `mcp_bicep_resolve_avm_module` for parameter schema
    - Cross-check planned parameters against actual AVM schema
    - Flag type mismatches (see AVM Known Pitfalls in azure-defaults skill)
 2. Check region limitations for all services
-3. Save results to `scenario/{project}/04-preflight-check.md`
-4. If blockers found → STOP and report to user
+3. If blockers found → STOP and report to user
 
 ### Phase 5: Progressive Implementation
 
 Build templates in dependency order.
 
-**Check `04-implementation-plan.md` for deployment strategy:**
+**Use the deployment strategy determined in Phase 3:**
 
 - If **phased**: add a `@allowed` `phase` parameter to `main.bicep`
   (values: `'all'`, `'foundation'`, `'security'`, `'data'`,
@@ -290,7 +266,7 @@ Build templates in dependency order.
 
 After each round: run `bicep build` to catch errors early.
 
-### Phase 6: Validation
+### Phase 6: Validation and Diagram Generation
 
 Run validation directly:
 
@@ -298,8 +274,16 @@ Run validation directly:
 - `bicep build scenario/{project}/infra/main.bicep` — fix any errors
 - If either fails: fix issues and re-run until both pass
 
-Save validation status in `05-implementation-reference.md`.
-Run `npm run lint:artifact-templates` and fix any H2 structure errors for your artifacts.
+After templates pass validation, generate the runtime diagram:
+
+1. Write `scenario/{project}/04-runtime-diagram.py` (azure-diagrams-style, reflects the actual deployed topology)
+2. Execute the script: `python scenario/{project}/04-runtime-diagram.py`
+3. Verify `scenario/{project}/04-runtime-diagram.png` exists on disk
+4. **Delete** `scenario/{project}/04-runtime-diagram.py` — the source file is not needed after the PNG is produced
+
+> [!CAUTION]
+> The PNG is a **mandatory** deliverable. Do not mark this phase complete
+> until `04-runtime-diagram.png` exists and the `.py` file has been removed.
 
 ## File Structure
 
@@ -342,42 +326,33 @@ module networking 'modules/networking.bicep' = { ... }
 
 ## Output Files
 
-| File                        | Location                                            |
-| --------------------------- | --------------------------------------------------- |
-| Implementation Plan         | `scenario/{project}/04-implementation-plan.md`      |
-| Governance Constraints      | `scenario/{project}/04-governance-constraints.md`   |
-| Governance Constraints JSON | `scenario/{project}/04-governance-constraints.json` |
-| Dependency Diagram Source   | `scenario/{project}/04-dependency-diagram.py`       |
-| Dependency Diagram Image    | `scenario/{project}/04-dependency-diagram.png`      |
-| Runtime Diagram Source      | `scenario/{project}/04-runtime-diagram.py`          |
-| Runtime Diagram Image       | `scenario/{project}/04-runtime-diagram.png`         |
-| Preflight Check             | `scenario/{project}/04-preflight-check.md`          |
-| Implementation Ref          | `scenario/{project}/05-implementation-reference.md` |
-| IaC Templates               | `scenario/{project}/infra/`                         |
-| AZD Project Config          | `scenario/{project}/azure.yaml`                     |
+| File                     | Location                                    | Notes                                           |
+| ------------------------ | ------------------------------------------- | ----------------------------------------------- |
+| IaC Templates            | `scenario/{project}/infra/`                 | Permanent — the deployable infrastructure       |
+| AZD Project Config       | `scenario/{project}/azure.yaml`             | Permanent — required for `azd provision`        |
+| Runtime Diagram (PNG)    | `scenario/{project}/04-runtime-diagram.png` | Permanent — architecture reference              |
 
-Include attribution header from the template file (do not hardcode).
+> [!NOTE]
+> Governance constraints, implementation plan, preflight results, and implementation
+> reference are **internal context only** — never written to disk.
 
 ## Validation Checklist
 
 - [ ] Governance discovery completed via REST API / ARG query
 - [ ] AVM availability checked for every resource
-- [ ] Deployment strategy selected automatically
-- [ ] Implementation plan generated with YAML task specs
-- [ ] All resources have naming patterns following CAF conventions
-- [ ] Dependency graph is acyclic and complete
-- [ ] Preflight check completed and saved to `04-preflight-check.md`
-- [ ] Governance compliance mapping completed (Phase 4.5)
+- [ ] Deployment strategy selected automatically (phased or single)
+- [ ] Implementation plan built in working context (YAML task specs)
+- [ ] Preflight check completed in working context — no blockers
 - [ ] All tags from governance constraints applied to every resource (4 baseline + discovered)
-- [ ] Every Deny policy in `04-governance-constraints.json` is satisfied in Bicep code
+- [ ] Every Deny policy from governance discovery is satisfied in Bicep code
 - [ ] AVM modules used for all resources with AVM availability
+- [ ] All resources have naming patterns following CAF conventions
 - [ ] `uniqueSuffix` generated once in `main.bicep`, passed to all modules
 - [ ] Security baseline applied (TLS 1.2, HTTPS, managed identity)
 - [ ] Deployer (`principalId`) assigned data plane roles on all RBAC-enabled resources
 - [ ] Length constraints respected (Key Vault ≤24, Storage ≤24)
 - [ ] No deprecated parameters used (checked against AVM pitfalls)
 - [ ] `bicep lint` and `bicep build` pass with no errors
-- [ ] `05-implementation-reference.md` saved with validation status
-- [ ] `04-dependency-diagram.py/.png` generated and referenced in plan
-- [ ] `04-runtime-diagram.py/.png` generated and referenced in plan
-- [ ] H2 headings match azure-artifacts templates exactly
+- [ ] `04-runtime-diagram.png` exists on disk
+- [ ] `04-runtime-diagram.py` has been deleted
+- [ ] `azure.yaml` exists with `infra.path: ./infra`

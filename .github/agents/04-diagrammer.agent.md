@@ -1,7 +1,7 @@
 ---
 name: 04-Diagrammer
 model: "GPT-5.3-Codex"
-description: Generates architecture diagrams and Architecture Decision Records (ADRs) for Azure infrastructure projects. Uses the azure-diagrams skill for visual documentation and the azure-adr skill for formal decision records.
+description: "RETIRED FROM MAIN WORKFLOW. Architecture diagrams are now generated inline by the Bicep agent (04-runtime-diagram.png). This agent is kept for standalone/ad-hoc diagram generation only and is not invoked by the Conductor."
 user-invokable: true
 argument-hint: Specify whether to generate a diagram, an ADR, or both for the current project
 agents: []

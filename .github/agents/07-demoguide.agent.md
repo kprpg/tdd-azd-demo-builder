@@ -62,7 +62,7 @@ tools:
 
 # DemoGuide Agent
 
-**Step 6** of the workflow: `requirements → architect → design → bicep → deploy → demoguide`
+**Step 5** of the workflow: `requirements → architect → bicep → deploy → demoguide`
 
 Generates comprehensive, audience-aware demonstration guides from deployed Azure
 infrastructure. Validates environment readiness, creates step-by-step runbooks
@@ -79,7 +79,7 @@ with talking points, and produces contingency playbooks for live presentations.
 
 ### DO
 
-- ✅ Read ALL source artifacts (01-05) before generating the demo guide
+- ✅ Read ALL source artifacts (`01-requirements.md`, `02-architecture-assessment.md`, `infra/`) before generating the demo guide
 - ✅ Include actual Azure CLI/Portal commands — not pseudocode
 - ✅ Cross-reference deployed resources from Bicep templates
 - ✅ Generate pre-demo validation commands the presenter can run
@@ -104,18 +104,20 @@ with talking points, and produces contingency playbooks for live presentations.
 
 ### Phase 1: Context Gathering
 
-> [!NOTE]
-> The files read below are **intermediary workflow artifacts**. They exist
-> during the workflow for handoff purposes and will be removed by the
-> Conductor's post-workflow cleanup (Checkpoint 5b) once you complete Step 6.
-
 1. Read `scenario/{project}/01-requirements.md` for business context
 2. Read `scenario/{project}/02-architecture-assessment.md` for resource architecture
-3. Read `scenario/{project}/04-implementation-plan.md` for resource inventory
-4. Read `scenario/{project}/05-implementation-reference.md` for deployment details
-5. Read `scenario/{project}/06-deployment-summary.md` for deployed resource details and outputs
-6. Scan `scenario/{project}/infra/` (or `scenario/{project}/infra/terraform/`) for actual templates
-7. Read `docs/presenter/character-reference.md` for persona storytelling hooks
+3. Scan `scenario/{project}/infra/` for actual templates (resource names, connection endpoints)
+4. Query Azure for deployed resource details:
+
+   ```powershell
+   az resource list --resource-group {rg-name} --output table
+   az deployment group show \
+     --resource-group {rg-name} \
+     --name {deployment-name} \
+     --query 'properties.outputs'
+   ```
+
+5. Read `docs/presenter/character-reference.md` for persona storytelling hooks
 
 ### Phase 2: Audience Selection
 

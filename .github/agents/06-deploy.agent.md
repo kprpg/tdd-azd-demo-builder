@@ -62,7 +62,7 @@ tools:
 
 # Deploy Agent
 
-**Step 5** of the workflow: `requirements → architect → design → bicep → [development] → [deploy] → demoguide`
+**Step 4** of the workflow: `requirements → architect → bicep → [development] → [deploy] → demoguide`
 
 Deploys validated Bicep templates to Azure using `azd up`. When a sample
 webapp was generated in Step 4b, `azd up` also deploys the application
@@ -108,9 +108,7 @@ resources, and produces a deployment summary artifact.
 - ✅ Prompt the user for confirmation before executing the actual deployment
 - ✅ Use `azd up` when `azure.yaml` exists in `scenario/{project}/`
 - ✅ Validate deployed resources after deployment completes
-- ✅ Generate `06-deployment-summary.md` with deployment details and resource outputs
 - ✅ Generate `scenario/{project}/README.md` — standalone quickstart for the scenario
-- ✅ Update `scenario/{project}/README.md` — mark Step 5 (Deploy) complete
 - ✅ Handle deployment failures gracefully with clear error messages and rollback guidance
 - ✅ **ALWAYS attempt `azd up`** — never skip deployment autonomously
 - ✅ **ALWAYS prompt the user on failure** — present errors and ask for a decision
@@ -132,18 +130,11 @@ resources, and produces a deployment summary artifact.
 
 Before starting, validate these artifacts exist in `scenario/{project}/`:
 
-| Artifact                         | Required | Purpose                                    |
-| -------------------------------- | -------- | ------------------------------------------ |
-| `04-implementation-plan.md`      | Yes      | Resource inventory and deployment strategy |
-| `05-implementation-reference.md` | Yes      | File structure and validation status       |
-| `infra/main.bicep`               | Yes      | Entry point for deployment                 |
-| `infra/main.bicepparam`          | Yes      | Parameter values                           |
-| `azure.yaml`                     | Yes      | AZD project configuration                  |
-
-> [!NOTE]
-> `04-implementation-plan.md` and `05-implementation-reference.md` are **intermediary
-> workflow artifacts**. They are required here but will be removed by the Conductor's
-> post-workflow cleanup (Checkpoint 5b) after the DemoGuide step completes.
+| Artifact                | Required | Purpose                                    |
+| ----------------------- | -------- | ------------------------------------------ |
+| `infra/main.bicep`      | Yes      | Entry point for deployment                 |
+| `infra/main.bicepparam` | Yes      | Parameter values                           |
+| `azure.yaml`            | Yes      | AZD project configuration                  |
 
 If `main.bicep` is missing, STOP and request handoff to the Bicep agent.
 
@@ -223,8 +214,7 @@ Estimated cost: {monthly-estimate}
 Proceed with deployment? (The user must confirm in chat)
 ```
 
-If the user declines, save what-if results to `06-deployment-summary.md`
-with status "Dry Run Only" and continue to the DemoGuide step.
+If the user declines, present the what-if summary and wait for further instructions.
 
 ### Phase 4: Deployment Execution
 
@@ -279,22 +269,7 @@ After deployment completes:
    az servicebus namespace show --name {sb-name} --resource-group {rg-name} --query "provisioningState" -o tsv
    ```
 
-### Phase 6: Deployment Summary Generation
-
-Generate `scenario/{project}/06-deployment-summary.md` following the
-template structure from `.github/skills/azure-artifacts/templates/06-deployment-summary.template.md`.
-
-Include:
-
-- Deployment timestamp and duration
-- Subscription and resource group details
-- List of all deployed resources with provisioning states
-- Deployment outputs (endpoints, connection info)
-- Any warnings or errors encountered
-- Cost estimate validation against architecture assessment
-- Cleanup instructions (`azd down` or `az group delete`)
-
-### Phase 7: Scenario README Generation
+### Phase 6: Scenario README Generation
 
 After a successful deployment, generate `scenario/{project}/README.md` — a
 standalone quickstart file that describes the scenario and how to deploy it.
@@ -325,8 +300,6 @@ repo (via the Contribute agent or manual export).
 | ------- | --- | ------- |
 | ...     | ... | ...     |
 
-<!-- Embed the architecture diagram if 03-architect-diagram.png exists -->
-
 ## Prerequisites
 
 - [Azure Developer CLI (`azd`)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
@@ -344,7 +317,7 @@ azd up
 
 ## What Gets Deployed
 
-<!-- Resource list from 06-deployment-summary.md or the Bicep templates -->
+<!-- Resource list from az deployment outputs and infra/ templates -->
 
 ## Teardown
 
@@ -361,7 +334,8 @@ walkthrough with talking points and screenshots.
 **Source data:**
 - `01-requirements.md` → Overview section
 - `02-architecture-assessment.md` → Architecture table
-- `06-deployment-summary.md` → Deployed resources list
+- `az resource list --resource-group {rg}` → Deployed resources list
+- `az deployment group show ... --query 'properties.outputs'` → Endpoints and outputs
 - `azure.yaml` → Project name for title
 
 If a scenario README already exists (from a previous run), overwrite it with
@@ -404,17 +378,14 @@ How would you like to proceed?
 ```
 
 > [!IMPORTANT]
-> Only generate `06-deployment-summary.md` with "Dry Run" or "Failed" status
-> if the **user explicitly chooses** to skip or abort. Never make this decision autonomously.
+> Only report failure status if the **user explicitly chooses** to skip or abort.
+> Never make this decision autonomously.
 
 ## Output Files
 
-| File               | Location                                      | Required |
-| ------------------ | --------------------------------------------- | -------- |
-| Deployment Summary | `scenario/{project}/06-deployment-summary.md` | Yes      |
-| Scenario README    | `scenario/{project}/README.md`                | Yes      |
-
-Include attribution header: `> Generated by deploy agent | {YYYY-MM-DD}`
+| File            | Location                       | Required |
+| --------------- | ------------------------------ | -------- |
+| Scenario README | `scenario/{project}/README.md` | Yes      |
 
 ## Validation Checklist
 
@@ -424,8 +395,4 @@ Include attribution header: `> Generated by deploy agent | {YYYY-MM-DD}`
 - [ ] User confirmed deployment (or dry-run documented)
 - [ ] Deployment executed successfully (or failure documented)
 - [ ] Post-deployment resource validation completed
-- [ ] All H2 headings match `06-deployment-summary.md` template structure
-- [ ] Attribution header present with agent name and date
-- [ ] README.md updated with Step 5 completion
-- [ ] Scenario README.md generated with quickstart instructions
-- [ ] No placeholder text in deployment summary
+- [ ] `README.md` generated with quickstart instructions
