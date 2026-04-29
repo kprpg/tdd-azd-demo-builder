@@ -244,9 +244,77 @@ Screenshots: scenario/{project}/demoguide/images/*.png (MANDATORY)
 ➡️ Continue to Contribution offer (Checkpoint 6)
 ```
 
+### Checkpoint 5b: Post-Workflow Artifact Cleanup (MANDATORY — runs after Checkpoint 6)
+
+> [!IMPORTANT]
+> Run this cleanup **after** the contribution decision is resolved (Step 7 complete
+> or user declined). The Contribute agent (08) reads `01-requirements.md` and
+> `02-architecture-assessment.md` to build the registry entry — those files must
+> still exist when Contribute runs.
+>
+> **Files REMOVED** (intermediary — not needed after workflow):
+> - `01-requirements.md`, `02-architecture-assessment.md`
+> - `03-architect-diagram.py`, `03-architect-diagram.png`
+> - `03-architect-runtime-diagram.py`, `03-architect-runtime-diagram.png`
+> - `03-architect-adr.md`
+> - `04-dependency-diagram.py`, `04-dependency-diagram.png`
+> - `04-governance-constraints.md`, `04-governance-constraints.json`
+> - `04-implementation-plan.md`, `04-preflight-check.md`
+> - `04-runtime-diagram.py` (**PNG is kept**)
+> - `05-implementation-reference.md`
+> - `06-deployment-summary.md`
+> - `07-webapp-summary.md`
+>
+> **Files KEPT** (production essentials):
+> - `azure.yaml`, `README.md`
+> - `infra/` (Bicep templates)
+> - `src/` (app source code, if generated)
+> - `demoguide/` (demo guide + screenshots)
+> - `04-runtime-diagram.png` (architecture reference diagram)
+
+Execute after Step 7 completes (or immediately when the user declines to contribute):
+
+```powershell
+$project = "scenario/{project}"
+$remove = @(
+  "01-requirements.md",
+  "02-architecture-assessment.md",
+  "03-architect-diagram.py",
+  "03-architect-diagram.png",
+  "03-architect-runtime-diagram.py",
+  "03-architect-runtime-diagram.png",
+  "03-architect-adr.md",
+  "04-dependency-diagram.py",
+  "04-dependency-diagram.png",
+  "04-governance-constraints.md",
+  "04-governance-constraints.json",
+  "04-implementation-plan.md",
+  "04-preflight-check.md",
+  "04-runtime-diagram.py",
+  "05-implementation-reference.md",
+  "06-deployment-summary.md",
+  "07-webapp-summary.md"
+)
+foreach ($file in $remove) {
+  $path = Join-Path $project $file
+  if (Test-Path $path) {
+    Remove-Item $path -Force
+    Write-Host "🗑️  Removed: $file"
+  }
+}
+Write-Host "✅ Cleanup complete — production essentials retained"
+```
+
+```text
+🧹 ARTIFACT CLEANUP COMPLETE
+Removed: intermediary workflow markdown + diagram source files
+Kept: azure.yaml, README.md, infra/, src/, demoguide/, 04-runtime-diagram.png
+✅ Scenario is production-ready
+```
+
 ### Checkpoint 6: Contribution Offer (USER CHOICE)
 
-After all artifacts are generated (Steps 1–6 complete), offer the contributor
+After the DemoGuide step is verified (Steps 1–6 complete), offer the contributor
 the option to submit their scenario to the upstream project:
 
 ```text
@@ -258,8 +326,8 @@ Would you like to contribute this scenario to the project?
   2. No  — keep the scenario local only
 ```
 
-- If **yes**: delegate to the `08-Contribute` agent with the project folder name.
-- If **no**: mark the workflow complete.
+- If **yes**: delegate to the `08-Contribute` agent → once Contribute completes, run the Checkpoint 5b cleanup script.
+- If **no**: run the Checkpoint 5b cleanup script immediately, then mark the workflow complete.
 
 > [!NOTE]
 > This is a **user-choice** handoff, not automatic. Never auto-trigger
@@ -293,10 +361,16 @@ Use `#runSubagent` for each workflow step:
 
 ## Resuming a Project
 
-1. Scan existing artifacts in `scenario/{project-name}/` and identify the last completed step from artifact numbering
-2. Automatically continue from the next incomplete step without prompting the user
+1. Scan existing artifacts in `scenario/{project-name}/` and identify the last completed step from artifact numbering.
+2. If only production essentials remain (`infra/`, `demoguide/`, `04-runtime-diagram.png` — no numbered `.md` files), the scenario is **fully complete** — notify the user instead of re-running.
+3. Otherwise, automatically continue from the next incomplete step without prompting the user.
 
 ## Artifact Tracking
+
+Artifacts are tracked in two stages: **during the workflow** (all files exist) and
+**after cleanup** (only production essentials remain).
+
+### During Workflow (Intermediary — Exist Until Cleanup)
 
 | Step | Artifact                                   | Check                                            |
 | ---- | ------------------------------------------ | ------------------------------------------------ |
@@ -308,14 +382,27 @@ Use `#runSubagent` for each workflow step:
 | 4    | `04-implementation-plan.md`                | Exists?                                          |
 | 4    | `04-dependency-diagram.py` + `.png`        | Both exist?                                      |
 | 4    | `04-runtime-diagram.py` + `.png`           | Both exist?                                      |
-| 4    | `scenario/{project}/infra/`                | Templates valid?                                 |
 | 4b   | `07-webapp-summary.md`                     | Conditional                                      |
-| 4b   | `scenario/{project}/src/`                  | Conditional                                      |
 | 5    | `06-deployment-summary.md`                 | Exists?                                          |
-| 6    | `/demoguide/demoguide.md`                  | Required                                         |
-| 6    | `demoguide/images/*.png`                   | **MANDATORY** — screenshots captured or fallback |
-| 7    | Draft PR on upstream repo                  | User opted in?                                   |
-| 7    | GitHub Issue (optional)                    | User opted in?                                   |
+
+### After Cleanup (Production Essentials — Permanent)
+
+| Artifact                      | Purpose                                          |
+| ----------------------------- | ------------------------------------------------ |
+| `azure.yaml`                  | AZD project config — required for deployment     |
+| `README.md`                   | Scenario quickstart guide                        |
+| `infra/`                      | Bicep templates — the deployable infrastructure  |
+| `src/`                        | Sample webapp source (conditional)               |
+| `demoguide/demoguide.md`      | **MANDATORY** — demo runbook                     |
+| `demoguide/images/*.png`      | **MANDATORY** — Playwright screenshots           |
+| `04-runtime-diagram.png`      | Architecture reference diagram                   |
+
+### Contribution (User-Invoked)
+
+| Step | Artifact              | Check          |
+| ---- | --------------------- | -------------- |
+| 7    | Draft PR on upstream  | User opted in? |
+| 7    | GitHub Issue (opt)    | User opted in? |
 
 ## Model Selection
 

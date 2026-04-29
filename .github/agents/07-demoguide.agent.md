@@ -104,6 +104,11 @@ with talking points, and produces contingency playbooks for live presentations.
 
 ### Phase 1: Context Gathering
 
+> [!NOTE]
+> The files read below are **intermediary workflow artifacts**. They exist
+> during the workflow for handoff purposes and will be removed by the
+> Conductor's post-workflow cleanup (Checkpoint 5b) once you complete Step 6.
+
 1. Read `scenario/{project}/01-requirements.md` for business context
 2. Read `scenario/{project}/02-architecture-assessment.md` for resource architecture
 3. Read `scenario/{project}/04-implementation-plan.md` for resource inventory

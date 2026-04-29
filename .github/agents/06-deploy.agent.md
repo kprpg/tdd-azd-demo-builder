@@ -140,6 +140,11 @@ Before starting, validate these artifacts exist in `scenario/{project}/`:
 | `infra/main.bicepparam`          | Yes      | Parameter values                           |
 | `azure.yaml`                     | Yes      | AZD project configuration                  |
 
+> [!NOTE]
+> `04-implementation-plan.md` and `05-implementation-reference.md` are **intermediary
+> workflow artifacts**. They are required here but will be removed by the Conductor's
+> post-workflow cleanup (Checkpoint 5b) after the DemoGuide step completes.
+
 If `main.bicep` is missing, STOP and request handoff to the Bicep agent.
 
 ## Workflow
