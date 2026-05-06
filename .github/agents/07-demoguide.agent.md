@@ -46,7 +46,7 @@ tools:
     web,
     web/fetch,
     web/githubRepo,
-    "microsoft/playwright-mcp/*",
+    "playwright/*",
     "azure-mcp/*",
     todo,
     vscode.mermaid-chat-features/renderMermaidDiagram,

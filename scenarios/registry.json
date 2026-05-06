@@ -1,3 +1,32 @@
 {
-  "scenarios": []
+  "scenarios": [
+    {
+      "name": "private-foundry-aks-apim-afd",
+      "title": "Private Foundry + AKS + APIM + AFD — Progressive Security Demo",
+      "description": "4-stage progressive network-security tightening for an AI chat workload. Private AKS, APIM VNet injection (External→Internal), Azure Front Door Premium with private link, Azure AI Foundry Hub+Project.",
+      "repository": "https://github.com/petender/tdd-azd-private-foundry-aks-apim-afd",
+      "tags": [
+        "aks",
+        "apim",
+        "azure-front-door",
+        "azure-ai-foundry",
+        "private-networking",
+        "security"
+      ],
+      "author": "petender",
+      "dateAdded": "2026-05-04",
+      "azureServices": [
+        "AKS",
+        "APIM",
+        "Azure Front Door Premium",
+        "Azure AI Foundry",
+        "Azure Bastion",
+        "ACR",
+        "Key Vault",
+        "VNet"
+      ],
+      "deployTime": "~35 minutes",
+      "costWarning": "~$800-900/month — tear down after demo"
+    }
+  ]
 }
