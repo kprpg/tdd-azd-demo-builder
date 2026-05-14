@@ -161,6 +161,18 @@ For each demo section, produce:
 | **Expected result** | Screenshot description or CLI output sample          |
 | **If it fails**     | Quick recovery step (reference contingency playbook) |
 
+> [!IMPORTANT]
+> **Demo scripts MUST include Azure Portal steps**, not just the webapp.
+> A proper demo shows the infrastructure, not only the end-user application.
+>
+> Structure the demo flow as:
+> 1. **Architecture context** — Portal: Resource Group overview, deployed resources
+> 2. **Service deep-dive** — Portal: Key configuration blades (e.g., Cosmos Data Explorer, AI endpoint, App Settings)
+> 3. **Live app walkthrough** — Webapp: Functional routes demonstrating the scenario
+> 4. **Observability** — Portal: Application Insights, monitoring dashboards
+>
+> Every Portal step should have a corresponding screenshot from Phase 6.
+
 ### Phase 5: Contingency Playbook
 
 For each resource in the architecture, document:
@@ -205,15 +217,84 @@ for resource overviews and each demo step.
    />
    ```
 
-**Minimum screenshots required:**
+**Two categories of screenshots are required:**
 
-| Screenshot                               | Portal Blade / View                          | Required  |
+#### Category A: Azure Portal Screenshots (Infrastructure Evidence)
+
+These prove the deployment exists and show the trainer what was provisioned.
+Navigate each blade in the Azure Portal via Playwright.
+
+| Screenshot                               | Portal Blade / View                                   | Required     |
+| ---------------------------------------- | ----------------------------------------------------- | ------------ |
+| Resource group overview                  | Resource Group → Overview (full resource list)        | Always       |
+| Deployment history                       | Resource Group → Deployments → latest deployment      | Always       |
+| Per-resource overview (each major svc)   | Resource → Overview (shows SKU, status, endpoint)     | Always       |
+| Per-resource configuration               | Resource → Settings blade (see table below)           | Always       |
+| Network topology (if applicable)         | Virtual Network → Diagram or Network Watcher          | If VNet      |
+| RBAC / Identity assignments              | Resource → Access Control (IAM) or Identity blade     | If RBAC used |
+| Monitoring dashboard                     | Application Insights → Application Map or Live Metrics | If AppInsights |
+
+**Service-specific configuration blades to capture:**
+
+| Azure Service          | Portal Blade to Screenshot                                        |
+| ---------------------- | ----------------------------------------------------------------- |
+| App Service            | Configuration → Application Settings (env vars visible)           |
+| Cosmos DB              | Data Explorer → show database + containers                        |
+| AI Language / Cognitive| Keys and Endpoint blade                                           |
+| Key Vault              | Secrets → list (names only, NOT values)                           |
+| SQL Database           | Overview (server name, DTUs/vCores, status)                       |
+| Function App           | Functions list → show triggers                                    |
+| Container Apps         | Overview → show revision, ingress URL                             |
+| Storage Account        | Containers / Tables / Queues (whichever is used)                  |
+| Virtual Network        | Subnets blade + NSG rules                                         |
+| Service Bus            | Queues/Topics list + message counts                               |
+| AKS                    | Node pools + Workloads blade                                      |
+
+Only capture blades for services actually deployed in the scenario.
+
+#### Category B: Application Screenshots (Webapp Evidence)
+
+These show the working app from a user's perspective. Navigate each app route
+via Playwright and capture the rendered page.
+
+| Screenshot                               | What to Capture                              | Required  |
 | ---------------------------------------- | -------------------------------------------- | --------- |
-| Resource group overview                  | Resource Group → Overview                    | Yes       |
-| Key resource detail (per major resource) | Resource → Overview / Properties             | Yes       |
-| Network topology (if applicable)         | Virtual Network → Diagram or Topology        | If VNet   |
-| Demo step result (per step)              | The Portal view showing the expected outcome | Yes       |
-| Deployed webapp homepage (if webapp)     | The live webapp URL in a browser             | If webapp |
+| Deployed webapp homepage                 | The live webapp URL in a browser             | If webapp |
+| Each functional route/page               | One screenshot per distinct user-facing page | If webapp |
+| Demo step result (per demo step)         | The page/output showing the expected result  | Always    |
+
+#### Screenshot Naming Convention
+
+```
+# Azure Portal screenshots
+resource-group-overview.png
+deployment-history.png
+{service-short-name}-overview.png        (e.g., cosmos-overview.png)
+{service-short-name}-configuration.png   (e.g., appservice-configuration.png)
+appinsights-application-map.png
+
+# Application screenshots
+homepage.png
+{persona}-{action}.png                   (e.g., backoffice-sentiment.png)
+```
+
+#### Playwright Script Generation
+
+Generate a `capture_screenshots.py` script in `scenario/{project}/demoguide/`
+that captures BOTH categories. The script should:
+
+1. Launch a Chromium browser via Playwright
+2. **App screenshots**: Navigate each app route and capture
+3. **Portal screenshots**: Navigate Azure Portal blades using the resource
+   group URL pattern `https://portal.azure.com/#@/resource/subscriptions/{sub}/resourceGroups/{rg}/overview`
+4. Save all images to `scenario/{project}/demoguide/images/`
+
+> **Note on Portal authentication**: Azure Portal screenshots require an
+> authenticated browser session. The script should either:
+> - Use `browser.launch(headless=False)` and pause for manual login, OR
+> - Document that the trainer must run the script interactively
+> - If Portal login cannot be automated, capture Portal screenshots manually
+>   and document this in the demo guide as a pre-demo step
 
 > [!IMPORTANT]
 > If Playwright MCP is unavailable or the user declines the browser session,
@@ -288,9 +369,12 @@ Before marking the demo guide complete:
 - [ ] Pre-demo checklist covers all critical resources
 - [ ] Contingency playbook covers at least the top 3 failure scenarios
 - [ ] Talking points align with the selected audience persona
-- [ ] Playwright screenshots captured and saved to `scenario/{project}/demoguide/images/`
-- [ ] Screenshots referenced inline in the demo guide with `<img>` tags
-- [ ] At minimum: resource group overview + one screenshot per major demo step
+- [ ] **Category A (Portal) screenshots**: resource group overview + deployment history + per-resource config blades
+- [ ] **Category B (App) screenshots**: homepage + each functional route/page
+- [ ] Demo script includes Portal walkthrough steps (not just webapp routes)
+- [ ] Screenshots referenced inline in the demo guide with `![alt](images/filename.png)` or `<img>` tags
+- [ ] A `capture_screenshots.py` script exists in `scenario/{project}/demoguide/` covering both categories
+- [ ] If Portal screenshots require manual capture, this is documented as a pre-demo step
 - [ ] If Playwright is unavailable, fallback placeholders include `TODO: capture screenshot` alt text and a brief reason is documented
 - [ ] Required screenshot files exist on disk (or documented fallback mode is present)
 - [ ] Cross-navigation links to adjacent artifacts are correct

@@ -13,7 +13,7 @@ applyTo: "**/*.bicep, **/azure.yaml"
 | Resource group    | Always named after the azd environment: `rg-${environment}` — see below    |
 | Unique suffix     | `var uniqueSuffix = uniqueString(resourceGroup().id)` in main.bicep         |
 | AVM first         | **MANDATORY** - Use Azure Verified Modules where available                  |
-| Tags              | Environment, ManagedBy, Project, SecurityControl: 'Ignore' on ALL resources |
+| Tags              | Environment, ManagedBy, Project, SecurityControl: 'Ignore' on ALL resources **including the resource group** |
 
 ## Naming Conventions
 
@@ -75,6 +75,26 @@ azd up
 azd automatically creates a resource group named `rg-{AZURE_ENV_NAME}` on
 `azd up` — **do not override this default unless the project has a specific
 naming requirement**.
+
+### Resource Group Tags (MANDATORY)
+
+When using `targetScope = 'resourceGroup'`, azd creates the resource group
+automatically **without tags**. You MUST add a `Microsoft.Resources/tags`
+resource in `main.bicep` to apply the standard tags to the resource group:
+
+```bicep
+@description('Apply standard tags to the resource group itself')
+resource rgTags 'Microsoft.Resources/tags@2024-03-01' = {
+  name: 'default'
+  properties: {
+    tags: tags
+  }
+}
+```
+
+Place this resource **before** any module deployments in `main.bicep`.
+This ensures the resource group has the same `SecurityControl: 'Ignore'`
+and other standard tags as all child resources.
 
 ## Parameters
 
