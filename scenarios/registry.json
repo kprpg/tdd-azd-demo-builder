@@ -5,7 +5,14 @@
       "title": "Private Foundry + AKS + APIM + AFD — Progressive Security Demo",
       "description": "4-stage progressive network-security tightening for an AI chat workload. Private AKS, APIM VNet injection (External→Internal), Azure Front Door Premium with private link, Azure AI Foundry Hub+Project.",
       "repository": "https://github.com/petender/tdd-azd-private-foundry-aks-apim-afd",
-      "tags": ["aks", "apim", "azure-front-door", "azure-ai-foundry", "private-networking", "security"],
+      "tags": [
+        "aks",
+        "apim",
+        "azure-front-door",
+        "azure-ai-foundry",
+        "private-networking",
+        "security"
+      ],
       "author": "petender",
       "dateAdded": "2026-05-04",
       "azureServices": [
@@ -20,6 +27,37 @@
       ],
       "deployTime": "~35 minutes",
       "costWarning": "~$800-900/month — tear down after demo"
+    },
+    {
+      "name": "tdd-azd-ai-language-services",
+      "title": "Azure AI Language Services — LUIS Migration Demo",
+      "description": "Demonstrates Azure AI Language capabilities (sentiment, NER, key phrases, PII detection, language detection) and Translator for a hotel reservation webapp. Non-generative AI, targeting customers migrating from legacy LUIS/AI Studio.",
+      "repository": "https://github.com/petender-demo-org/tdd-azd-ai-language-services",
+      "tags": [
+        "ai-language",
+        "ai-translator",
+        "cosmos-db",
+        "app-service",
+        "key-vault",
+        "luis-migration",
+        "nlp",
+        "hospitality"
+      ],
+      "author": "petender",
+      "dateAdded": "2026-05-14",
+      "azureServices": [
+        "Azure AI Language (TextAnalytics S)",
+        "Azure AI Translator (S1)",
+        "Cosmos DB (Serverless NoSQL)",
+        "App Service (B1 Linux)",
+        "Key Vault",
+        "Application Insights",
+        "Log Analytics"
+      ],
+      "deployTime": "~5 minutes",
+      "costWarning": "~$50-80/month (serverless Cosmos + B1 App Service) — tear down after demo",
+      "hasWebapp": true,
+      "industry": "Hospitality"
     }
   ]
 }

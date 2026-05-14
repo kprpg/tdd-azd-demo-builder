@@ -45,6 +45,16 @@ tags: {
 }
 ```
 
+> **Resource Group Tags**: When using `targetScope = 'resourceGroup'`, azd
+> creates the RG without tags. Add this to `main.bicep` to tag the RG:
+>
+> ```bicep
+> resource rgTags 'Microsoft.Resources/tags@2024-03-01' = {
+>   name: 'default'
+>   properties: { tags: tags }
+> }
+> ```
+
 ### Unique Suffix Pattern
 
 Generate ONCE in `main.bicep`, pass to ALL modules:

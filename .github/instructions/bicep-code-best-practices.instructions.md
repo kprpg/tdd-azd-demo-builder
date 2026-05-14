@@ -7,12 +7,13 @@ applyTo: "**/*.bicep, **/azure.yaml"
 
 ## Quick Reference
 
-| Rule          | Standard                                                                    |
-| ------------- | --------------------------------------------------------------------------- |
-| Region        | `eastus2` (alt: `westus3`)                                                  |
-| Unique suffix | `var uniqueSuffix = uniqueString(resourceGroup().id)` in main.bicep         |
-| AVM first     | **MANDATORY** - Use Azure Verified Modules where available                  |
-| Tags          | Environment, ManagedBy, Project, SecurityControl: 'Ignore' on ALL resources |
+| Rule              | Standard                                                                    |
+| ----------------- | --------------------------------------------------------------------------- |
+| Region            | `eastus2` (alt: `westus3`)                                                  |
+| Resource group    | Always named after the azd environment: `rg-${environment}` — see below    |
+| Unique suffix     | `var uniqueSuffix = uniqueString(resourceGroup().id)` in main.bicep         |
+| AVM first         | **MANDATORY** - Use Azure Verified Modules where available                  |
+| Tags              | Environment, ManagedBy, Project, SecurityControl: 'Ignore' on ALL resources **including the resource group** |
 
 ## Naming Conventions
 
@@ -41,6 +42,59 @@ module keyVault 'modules/key-vault.bicep' = {
 // Every module must accept uniqueSuffix and use it in resource names
 var kvName = 'kv-${take(projectName, 10)}-${environment}-${take(uniqueSuffix, 6)}'
 ```
+
+## Resource Group Naming (MANDATORY)
+
+The resource group must always be named after the azd environment so operators
+can immediately identify which environment a resource group belongs to.
+
+- Pattern: `rg-{environment}` (e.g. `rg-demo`, `rg-wed0429`)
+- In `main.bicep`, declare as a `targetScope = 'subscription'` deployment and
+  create the resource group inline, **or** use the azd default resource group
+  name convention by setting it in `main.bicepparam`:
+
+```bicep
+// main.bicepparam — wire the env name so azd names the RG correctly
+param environment = readEnvironmentVariable('AZURE_ENV_NAME', 'demo')
+```
+
+```bicep
+// main.bicep — derive the resource group name from the environment
+var resourceGroupName = 'rg-${environment}'
+```
+
+When `targetScope = 'resourceGroup'` (the default), ensure the azd environment
+is created with a matching resource group:
+
+```bash
+azd env new my-env
+azd env set AZURE_RESOURCE_GROUP rg-my-env  # optional override
+azd up
+```
+
+azd automatically creates a resource group named `rg-{AZURE_ENV_NAME}` on
+`azd up` — **do not override this default unless the project has a specific
+naming requirement**.
+
+### Resource Group Tags (MANDATORY)
+
+When using `targetScope = 'resourceGroup'`, azd creates the resource group
+automatically **without tags**. You MUST add a `Microsoft.Resources/tags`
+resource in `main.bicep` to apply the standard tags to the resource group:
+
+```bicep
+@description('Apply standard tags to the resource group itself')
+resource rgTags 'Microsoft.Resources/tags@2024-03-01' = {
+  name: 'default'
+  properties: {
+    tags: tags
+  }
+}
+```
+
+Place this resource **before** any module deployments in `main.bicep`.
+This ensures the resource group has the same `SecurityControl: 'Ignore'`
+and other standard tags as all child resources.
 
 ## Parameters
 
@@ -171,6 +225,36 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.0' = {
 2. **If AVM exists**: Use `br/public:avm/res/{service}/{resource}:{version}`
 3. **If no AVM**: Use raw Bicep and document why no AVM module applies
 4. Document justification in implementation reference
+
+## Azure SQL — AAD-Only Auth Pattern
+
+When using `azureADOnlyAuthentication: true`, the SQL Server still requires a local
+`administratorLogin`/`administratorLoginPassword` via the ARM API, but that account is
+disabled for actual login. **These values must differ from the AAD admin login name.**
+
+- Always hardcode `administratorLogin` to a static value distinct from the AAD admin
+  login (e.g., `'sqladminlocal'`). Never re-use the same string for both.
+- The `administrators.login` field is the AAD principal display name/UPN passed in as a
+  parameter.
+
+```bicep
+// ✅ Correct — local admin name is distinct from AAD admin login
+module sqlServer 'br/public:avm/res/sql/server:0.10.0' = {
+  params: {
+    administratorLogin: 'sqladminlocal'          // static, never used for auth
+    administratorLoginPassword: uniqueString(...)  // irrelevant with AAD-only
+    administrators: {
+      azureADOnlyAuthentication: true
+      login: sqlAdminLogin                        // AAD principal display name
+      sid: sqlAdminObjectId
+    }
+  }
+}
+
+// ❌ Wrong — same value for both causes ExternalAdministratorLoginSameAsSqlAdmin
+// administratorLogin: sqlAdminLogin
+// administrators: { login: sqlAdminLogin }
+```
 
 ## Patterns to Avoid
 

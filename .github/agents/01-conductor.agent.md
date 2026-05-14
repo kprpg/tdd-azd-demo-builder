@@ -123,19 +123,18 @@ Conductor for the Azure demo builder workflow.
 ```text
 Step 1: Requirements    →  01-requirements.md
 Step 2: Architecture    →  02-architecture-assessment.md
-Step 3: Design          →  03-architect-*.md/py
-Step 4: Bicep           →  04-implementation-plan.md + scenario/{project}/infra/
-Step 4b: Development    →  07-webapp-summary.md + scenario/{project}/src/ (conditional)
-Step 5: Deploy          →  06-deployment-summary.md + scenario/{project}/README.md
-Step 6: Demo Guide      →  /demoguide/demoguide.md
-Step 7: Contribute      →  standalone repo + scenarios/registry.json PR (user-invoked)
+Step 3: Bicep           →  infra/ + azure.yaml + 04-runtime-diagram.png
+Step 3b: Development    →  src/ + azure.yaml (services block) (conditional)
+Step 4: Deploy          →  README.md
+Step 5: Demo Guide      →  demoguide/demoguide.md
+Step 6: Contribute      →  standalone repo + scenarios/registry.json PR (user-invoked)
 ```
 
-> **Step 4b** is conditional. During Step 1, ask the user:
+> **Step 3b** is conditional. During Step 1, ask the user:
 > _"Would you like to include a sample web application for this workload? If yes, which business industry? (Healthcare, Retail, Finance, Education, Hospitality, Logistics, Real Estate, Manufacturing)"_
 >
-> If the user says yes, store the industry choice and execute Step 4b after Bicep.
-> If the architecture is VM-only, skip Step 4b automatically.
+> If the user says yes, store the industry choice and execute Step 3b after Bicep.
+> If the architecture is VM-only, skip Step 3b automatically.
 
 ## Progress Checkpoints
 
@@ -153,62 +152,39 @@ Artifact: scenario/{project}/01-requirements.md
 ```text
 🏗️ ARCHITECTURE ASSESSMENT COMPLETE
 Artifact: scenario/{project}/02-architecture-assessment.md
-✅ Next: Design Artifacts (Step 3)
-➡️ Continue automatically to Design (Step 3)
-```
-
-### Checkpoint 2b: After Design (VERIFICATION GATE)
-
-> [!CAUTION]
-> **MANDATORY — Verify runtime flow diagram exists before proceeding.**
-> After the Diagrammer agent completes, check that BOTH diagram PNGs exist:
->
-> - `scenario/{project}/03-architect-diagram.png`
-> - `scenario/{project}/03-architect-runtime-diagram.png`
->
-> If the runtime flow diagram is missing, **send the Diagrammer agent back**
-> to generate it. Do NOT proceed to Bicep without both diagrams.
-
-```text
-🎨 DESIGN ARTIFACTS COMPLETE
-Artifacts:
-  - scenario/{project}/03-architect-diagram.py + .png
-  - scenario/{project}/03-architect-runtime-diagram.py + .png (MANDATORY)
-  - scenario/{project}/03-architect-adr.md
-✅ Both diagram PNGs verified on disk
-➡️ Continue automatically to Bicep (Step 4)
+✅ Next: Bicep (Step 3)
+➡️ Continue automatically to Bicep (Step 3)
 ```
 
 ### Checkpoint 3: After Bicep
 
 ```text
-🔍 BICEP COMPLETE
-Plan: scenario/{project}/04-implementation-plan.md
+🔧 BICEP COMPLETE
 Templates: scenario/{project}/infra/
-Reference: scenario/{project}/05-implementation-reference.md
-✅ Next: Development (Step 4b) or Deploy (Step 5)
-➡️ If sample webapp requested: continue to Development (Step 4b)
-➡️ If no webapp requested or VM-only: skip to Deploy (Step 5)
+Diagram:   scenario/{project}/04-runtime-diagram.png
+AZD config: scenario/{project}/azure.yaml
+✅ Next: Development (Step 3b) or Deploy (Step 4)
+➡️ If sample webapp requested: continue to Development (Step 3b)
+➡️ If no webapp requested or VM-only: skip to Deploy (Step 4)
 ```
 
 ### Checkpoint 3b: After Development (Conditional)
 
 ```text
 🧑‍💻 DEVELOPMENT COMPLETE
-Artifact: scenario/{project}/07-webapp-summary.md
 Source: scenario/{project}/src/{ProjectName}.Web/
 azd wiring: scenario/{project}/azure.yaml (services block added)
-✅ Next: Deploy (Step 5)
-➡️ Continue automatically to Deploy (Step 5)
+✅ Next: Deploy (Step 4)
+➡️ Continue automatically to Deploy (Step 4)
 ```
 
 ### Checkpoint 4: After Deploy
 
 ```text
 🚀 DEPLOYMENT COMPLETE
-Artifact: scenario/{project}/06-deployment-summary.md
-✅ Next: Demo Guide (Step 6)
-➡️ Continue automatically to Demo Guide (Step 6)
+README: scenario/{project}/README.md
+✅ Next: Demo Guide (Step 5)
+➡️ Continue automatically to Demo Guide (Step 5)
 ```
 
 > [!CAUTION]
@@ -246,12 +222,15 @@ Screenshots: scenario/{project}/demoguide/images/*.png (MANDATORY)
 
 ### Checkpoint 6: Contribution Offer (USER CHOICE)
 
-After all artifacts are generated (Steps 1–6 complete), offer the contributor
+After the DemoGuide step is verified (Steps 1–5 complete), offer the contributor
 the option to submit their scenario to the upstream project:
 
 ```text
-🎉 WORKFLOW COMPLETE — ALL ARTIFACTS GENERATED
+🎉 WORKFLOW COMPLETE
 Scenario: scenario/{project}/
+
+Production artifacts: infra/, azure.yaml, README.md, demoguide/, 04-runtime-diagram.png
+                      + src/ (if webapp was generated)
 
 Would you like to contribute this scenario to the project?
   1. Yes — fork, branch, commit, and open a draft PR
@@ -273,12 +252,11 @@ Use `#runSubagent` for each workflow step:
 | ---- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1    | Requirements | Parse the user's scenario description, extract requirements through all phases, then generate 01-requirements.md                                                                                                      |
 | 2    | Architect    | Create architecture assessment for requirements in 01-requirements.md                                                                                                                                                 |
-| 3    | Design       | Generate **both** architecture diagram AND runtime flow diagram, plus ADRs. **VERIFY both PNGs exist before proceeding.**                                                                                             |
-| 4    | Bicep        | Run governance discovery, plan, generate Bicep templates, generate dependency + runtime diagrams, and validate per 02-architecture-assessment.md                                                                      |
-| 4b   | Development  | Scaffold .NET 10 sample webapp with {industry} seed data, wire into azure.yaml, validate build. **Skip if VM-only or user declined.**                                                                                 |
-| 5    | Deploy       | Run what-if analysis, prompt user, deploy to Azure with `azd up`, generate 06-deployment-summary.md. **MUST attempt actual deployment. On failure, report back so the Conductor can prompt the user for a decision.** |
-| 6    | DemoGuide    | Generate audience-aware demo runbook with **Playwright screenshots** of deployed resources. **VERIFY screenshots exist in `demoguide/images/` before marking complete.**                                              |
-| 7    | Contribute   | Validate artifacts, fork repo, create branch, commit scenario, open draft PR, optionally create tracking issue. **User must explicitly opt in — never auto-trigger.**                                                  |
+| 3    | Bicep        | Run governance discovery, generate Bicep templates and 04-runtime-diagram.png, validate per 02-architecture-assessment.md                                                                                             |
+| 3b   | Development  | Scaffold .NET 10 sample webapp with {industry} seed data, wire into azure.yaml, validate build. **Skip if VM-only or user declined.**                                                                                 |
+| 4    | Deploy       | Run what-if analysis, prompt user, deploy to Azure with `azd up`, generate README.md. **MUST attempt actual deployment. On failure, report back so the Conductor can prompt the user for a decision.**                |
+| 5    | DemoGuide    | Generate audience-aware demo runbook with **Playwright screenshots** of deployed resources. **VERIFY screenshots exist in `demoguide/images/` before marking complete.**                                              |
+| 6    | Contribute   | Validate artifacts, fork repo, create branch, commit scenario, open draft PR, optionally create tracking issue. **User must explicitly opt in — never auto-trigger.**                                                  |
 
 ## Starting a New Project
 
@@ -293,29 +271,24 @@ Use `#runSubagent` for each workflow step:
 
 ## Resuming a Project
 
-1. Scan existing artifacts in `scenario/{project-name}/` and identify the last completed step from artifact numbering
-2. Automatically continue from the next incomplete step without prompting the user
+1. Scan `scenario/{project-name}/` and identify the last completed step using the table above.
+2. If `demoguide/demoguide.md` and `infra/main.bicep` both exist, the scenario is **fully complete** — notify the user.
+3. Otherwise, continue automatically from the next incomplete step.
 
 ## Artifact Tracking
 
-| Step | Artifact                                   | Check                                            |
-| ---- | ------------------------------------------ | ------------------------------------------------ |
-| 1    | `01-requirements.md`                       | Exists?                                          |
-| 2    | `02-architecture-assessment.md`            | Exists?                                          |
-| 3    | `03-architect-diagram.py` + `.png`         | Both exist?                                      |
-| 3    | `03-architect-runtime-diagram.py` + `.png` | **MANDATORY** — both exist?                      |
-| 3    | `03-architect-adr.md`                      | Exists?                                          |
-| 4    | `04-implementation-plan.md`                | Exists?                                          |
-| 4    | `04-dependency-diagram.py` + `.png`        | Both exist?                                      |
-| 4    | `04-runtime-diagram.py` + `.png`           | Both exist?                                      |
-| 4    | `scenario/{project}/infra/`                | Templates valid?                                 |
-| 4b   | `07-webapp-summary.md`                     | Conditional                                      |
-| 4b   | `scenario/{project}/src/`                  | Conditional                                      |
-| 5    | `06-deployment-summary.md`                 | Exists?                                          |
-| 6    | `/demoguide/demoguide.md`                  | Required                                         |
-| 6    | `demoguide/images/*.png`                   | **MANDATORY** — screenshots captured or fallback |
-| 7    | Draft PR on upstream repo                  | User opted in?                                   |
-| 7    | GitHub Issue (optional)                    | User opted in?                                   |
+| Step | Artifact                          | Check                                            |
+| ---- | --------------------------------- | ------------------------------------------------ |
+| 1    | `01-requirements.md`              | Exists?                                          |
+| 2    | `02-architecture-assessment.md`   | Exists?                                          |
+| 3    | `infra/main.bicep`                | Templates valid?                                 |
+| 3    | `azure.yaml`                      | Exists?                                          |
+| 3    | `04-runtime-diagram.png`          | Exists?                                          |
+| 3b   | `src/`                            | Conditional — exists if webapp requested         |
+| 4    | `README.md`                       | Exists?                                          |
+| 5    | `demoguide/demoguide.md`          | Required                                         |
+| 5    | `demoguide/images/*.png`          | **MANDATORY** — screenshots captured or fallback |
+| 6    | Draft PR on upstream              | User opted in?                                   |
 
 ## Model Selection
 
