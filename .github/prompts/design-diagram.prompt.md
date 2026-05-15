@@ -23,7 +23,7 @@ diagram following the azure-diagrams skill conventions.
 
 ## Scope & Preconditions
 
-- `scenario/${input:projectName}/02-architecture-assessment.md` must exist
+- `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
 - Read `.github/skills/SKILL.md` for diagram conventions, icon catalog, and naming conventions
 - Use the `diagrams` Python library (pre-installed in dev container)
 
@@ -31,13 +31,13 @@ diagram following the azure-diagrams skill conventions.
 
 | Variable               | Description                                  | Default  |
 | ---------------------- | -------------------------------------------- | -------- |
-| `${input:projectName}` | Project name matching the `scenario/` folder | Required |
+| `${input:projectName}` | Project name matching the `generated-scenarios/` folder | Required |
 
 ## Workflow
 
 ### Step 1: Read Architecture
 
-Read `scenario/{projectName}/02-architecture-assessment.md` for the
+Read `generated-scenarios/{projectName}/02-architecture-assessment.md` for the
 full resource list, network topology, and data flow paths.
 
 ### Step 2: Design Diagram Layout
@@ -63,12 +63,12 @@ renders correctly.
 
 ### Step 5: Save Artifacts
 
-Save to `scenario/{projectName}/03-architect-diagram.py`.
+Save to `generated-scenarios/{projectName}/03-architect-diagram.py`.
 
 ## Output Expectations
 
 ```text
-scenario/{projectName}/
+generated-scenarios/{projectName}/
 ├── 03-architect-diagram.py     # Python source
 └── 03-architect-diagram.png    # Rendered output
 ```

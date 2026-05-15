@@ -28,8 +28,8 @@ All steps are required to have a successful project and do the handover to the u
 ## Scope & Preconditions
 
 - User describes their project in business terms or technical terms
-- All artifacts are saved to `scenario/${input:projectName}/`
-- Bicep templates are saved to `scenario/${input:projectName}/infra/` and should support `azd provision`
+- All artifacts are saved to `generated-scenarios/${input:projectName}/`
+- Bicep templates are saved to `generated-scenarios/${input:projectName}/infra/` and should support `azd provision`
 - Each step produces artifacts that feed the next step
 - Proceed through workflow steps automatically unless the user explicitly pauses
 
@@ -103,7 +103,7 @@ With this final step completed successfully, **after** running the validation, *
 ## Output Expectations
 
 ```text
-scenario/{projectName}/
+generated-scenarios/{projectName}/
 ├── 01-requirements.md
 ├── 02-architecture-assessment.md
 ├── 03-architect-diagram.py
@@ -120,12 +120,12 @@ scenario/{projectName}/
 ├── /demoguide/images/*.png
 └── README.md
 
-scenario/{projectName}/infra/
+generated-scenarios/{projectName}/infra/
 ├── main.bicep
 ├── main.bicepparam
 └── modules/
 
-scenario/{projectName}/src/         (conditional — if sample webapp requested)
+generated-scenarios/{projectName}/src/         (conditional — if sample webapp requested)
 └── {ProjectName}.Web/
 ```
 

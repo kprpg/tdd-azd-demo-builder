@@ -30,7 +30,7 @@ Pricing MCP tools.
 
 ## Scope & Preconditions
 
-- `scenario/${input:projectName}/01-requirements.md` must exist
+- `generated-scenarios/${input:projectName}/01-requirements.md` must exist
 - Read `.github/skills/SKILL.md` for consolidated configuration, templates, and patterns
 - Use Azure Pricing MCP tools with EXACT service names from the skill
 - Search Microsoft docs for each Azure service recommendation
@@ -39,13 +39,13 @@ Pricing MCP tools.
 
 | Variable               | Description                                  | Default  |
 | ---------------------- | -------------------------------------------- | -------- |
-| `${input:projectName}` | Project name matching the `scenario/` folder | Required |
+| `${input:projectName}` | Project name matching the `generated-scenarios/` folder | Required |
 
 ## Workflow
 
 ### Step 1: Read Requirements
 
-Read `scenario/{projectName}/01-requirements.md` for business context,
+Read `generated-scenarios/{projectName}/01-requirements.md` for business context,
 architecture pattern, NFRs, compliance, budget, and scale requirements.
 
 ### Step 2: WAF Assessment
@@ -74,7 +74,7 @@ Break down by resource, include reserved instance savings options.
 
 ### Step 5: Generate Artifacts
 
-Save to `scenario/{projectName}/`:
+Save to `generated-scenarios/{projectName}/`:
 
 - `02-architecture-assessment.md` — WAF scores, service recommendations
 - `03-architect-cost-estimate.md` — detailed cost breakdown

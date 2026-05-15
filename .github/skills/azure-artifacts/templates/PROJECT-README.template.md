@@ -1,6 +1,6 @@
 # Project README Template
 
-> **Template for project-level README files in `scenario/{project}/`**
+> **Template for project-level README files in `generated-scenarios/{project}/`**
 
 ---
 

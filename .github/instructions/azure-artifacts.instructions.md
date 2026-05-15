@@ -1,5 +1,5 @@
 ---
-applyTo: "**/scenario/**/*.md"
+applyTo: "**/generated-scenarios/**/*.md"
 description: "MANDATORY template compliance rules for artifact generation"
 ---
 

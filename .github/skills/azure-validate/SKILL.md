@@ -123,10 +123,10 @@ az account set --subscription "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 ```powershell
 # Build main template (transpiles to ARM JSON)
-bicep build scenario/{project}/infra/main.bicep
+bicep build generated-scenarios/{project}/infra/main.bicep
 
 # Build all bicep files in the directory
-Get-ChildItem scenario/{project}/infra -Recurse -Filter "*.bicep" | ForEach-Object {
+Get-ChildItem generated-scenarios/{project}/infra -Recurse -Filter "*.bicep" | ForEach-Object {
     Write-Host "Building: $($_.FullName)"
     bicep build $_.FullName
 }
@@ -138,7 +138,7 @@ A successful `bicep build` produces no output. Any output indicates errors.
 
 ```powershell
 # Lint the main template
-bicep lint scenario/{project}/infra/main.bicep
+bicep lint generated-scenarios/{project}/infra/main.bicep
 ```
 
 Linting checks against `bicepconfig.json` rules. Common lint warnings:
@@ -157,8 +157,8 @@ Linting checks against `bicepconfig.json` rules. Common lint warnings:
 # Validate against Azure Resource Manager (without deploying)
 az deployment group validate `
   --resource-group {rg-name} `
-  --template-file scenario/{project}/infra/main.bicep `
-  --parameters scenario/{project}/infra/main.bicepparam
+  --template-file generated-scenarios/{project}/infra/main.bicep `
+  --parameters generated-scenarios/{project}/infra/main.bicepparam
 ```
 
 This calls the ARM validation endpoint which checks:
@@ -176,7 +176,7 @@ This calls the ARM validation endpoint which checks:
 
 ```powershell
 # Extract parameters from the Bicep file
-bicep build scenario/{project}/infra/main.bicep --stdout | `
+bicep build generated-scenarios/{project}/infra/main.bicep --stdout | `
   ConvertFrom-Json | `
   Select-Object -ExpandProperty parameters | `
   ForEach-Object { $_.PSObject.Properties } | `
@@ -188,10 +188,10 @@ bicep build scenario/{project}/infra/main.bicep --stdout | `
 
 ```powershell
 # Ensure the parameter file exists
-Test-Path scenario/{project}/infra/main.bicepparam
+Test-Path generated-scenarios/{project}/infra/main.bicepparam
 
 # Verify it references the correct template
-Get-Content scenario/{project}/infra/main.bicepparam | Select-Object -First 1
+Get-Content generated-scenarios/{project}/infra/main.bicepparam | Select-Object -First 1
 # Expected: using 'main.bicep'
 ```
 
@@ -277,14 +277,14 @@ $providers | ForEach-Object {
 # Resource group scoped
 az deployment group what-if `
   --resource-group {rg-name} `
-  --template-file scenario/{project}/infra/main.bicep `
-  --parameters scenario/{project}/infra/main.bicepparam
+  --template-file generated-scenarios/{project}/infra/main.bicep `
+  --parameters generated-scenarios/{project}/infra/main.bicepparam
 
 # Subscription scoped
 az deployment sub what-if `
   --location eastus2 `
-  --template-file scenario/{project}/infra/main.bicep `
-  --parameters scenario/{project}/infra/main.bicepparam
+  --template-file generated-scenarios/{project}/infra/main.bicep `
+  --parameters generated-scenarios/{project}/infra/main.bicepparam
 ```
 
 ### What-If Validation Criteria
@@ -302,8 +302,8 @@ az deployment sub what-if `
 # Save what-if output for analysis
 $whatif = az deployment group what-if `
   --resource-group {rg-name} `
-  --template-file scenario/{project}/infra/main.bicep `
-  --parameters scenario/{project}/infra/main.bicepparam `
+  --template-file generated-scenarios/{project}/infra/main.bicep `
+  --parameters generated-scenarios/{project}/infra/main.bicepparam `
   --no-pretty-print 2>&1
 
 # Check for destructive changes

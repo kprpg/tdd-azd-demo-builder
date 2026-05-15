@@ -16,13 +16,13 @@
 | 1    | Requirements | `01-requirements.md`                                      | Automatic   |
 | 2    | Architect    | `02-architecture-assessment.md`                           | Automatic   |
 | 3    | Diagrammer   | `03-architect-*.{py,png,md}`                              | Automatic   |
-| 4    | Bicep        | `04-implementation-plan.md` + `scenario/{project}/infra/` | Automatic   |
-| 4b   | Development  | `07-webapp-summary.md` + `scenario/{project}/src/`        | Conditional |
+| 4    | Bicep        | `04-implementation-plan.md` + `generated-scenarios/{project}/infra/` | Automatic   |
+| 4b   | Development  | `07-webapp-summary.md` + `generated-scenarios/{project}/src/`        | Conditional |
 | 5    | Deploy       | `06-deployment-summary.md`                                | Automatic   |
 | 6    | DemoGuide    | `/demoguide/demoguide.md` + `/demoguide/*.png`            | Automatic   |
 | 7    | Contribute   | Standalone repo + `scenarios/registry.json` PR    | User-invoked |
 
-All outputs → `scenario/{project}/`. Context flows via artifact files + handoffs.
+All outputs → `generated-scenarios/{project}/`. Context flows via artifact files + handoffs.
 
 ## Skills (Auto-Invoked by Agents)
 
@@ -67,8 +67,8 @@ Full details in `.github/skills/SKILL.md`.
 | `.github/agents/*.agent.md`       | Agent definitions                            |
 | `.github/skills/*/SKILL.md`       | Reusable skill knowledge                     |
 | `.github/instructions/`           | File-type rules (Bicep, Markdown, etc.)      |
-| `scenario/{project}/`             | Agent-generated artifacts                    |
-| `scenario/{project}/infra/`       | Bicep templates                              |
-| `scenario/{project}/src/`         | Sample webapp source (when generated)        |
+| `generated-scenarios/{project}/`             | Agent-generated artifacts                    |
+| `generated-scenarios/{project}/infra/`       | Bicep templates                              |
+| `generated-scenarios/{project}/src/`         | Sample webapp source (when generated)        |
 | `.vscode/mcp.json`                | MCP server configuration                     |
 | `.vscode/infraops.toolsets.jsonc` | Workspace tool groups for interactive chat   |

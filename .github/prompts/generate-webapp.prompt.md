@@ -27,18 +27,18 @@ configuration.
 
 ## Scope & Preconditions
 
-- `scenario/${input:projectName}/02-architecture-assessment.md` must exist
-- `scenario/${input:projectName}/infra/` must contain validated Bicep templates
+- `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
+- `generated-scenarios/${input:projectName}/infra/` must contain validated Bicep templates
 - Read `.github/skills/SKILL.md` for naming conventions and defaults
 - Read `.github/skills/webapp-development/SKILL.md` for .NET 10 patterns
 - Read `.github/instructions/dotnet-webapp.instructions.md` for coding standards
-- Output saved to `scenario/${input:projectName}/src/{ProjectName}.Web/`
+- Output saved to `generated-scenarios/${input:projectName}/src/{ProjectName}.Web/`
 
 ## Inputs
 
 | Variable               | Description                                  | Default  |
 | ---------------------- | -------------------------------------------- | -------- |
-| `${input:projectName}` | Project name matching the `scenario/` folder | Required |
+| `${input:projectName}` | Project name matching the `generated-scenarios/` folder | Required |
 | `${input:industry}`    | Business industry for seed data              | Required |
 
 ## Workflow
@@ -84,7 +84,7 @@ configuration.
 ## Output Expectations
 
 ```text
-scenario/{projectName}/
+generated-scenarios/{projectName}/
 ├── 07-webapp-summary.md
 ├── src/{ProjectName}.Web/
 │   ├── {ProjectName}.Web.csproj

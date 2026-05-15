@@ -31,7 +31,7 @@ Brief description of what will be implemented.
 ## 🗂️ Module Structure
 
 ```text
-scenario/{project-name}/infra/
+generated-scenarios/{project-name}/infra/
 ├── main.bicep
 ├── main.bicepparam
 ├── modules/

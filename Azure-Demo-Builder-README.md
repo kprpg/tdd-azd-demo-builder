@@ -10,7 +10,7 @@ Instead of manually writing Bicep templates, configuring `azd`, and preparing de
 
 ## How It Works
 
-The workflow is a multi-step pipeline. Each step is handled by a dedicated agent that produces versioned artifacts in `scenario/{project}/`. The Conductor coordinates handoffs automatically.
+The workflow is a multi-step pipeline. Each step is handled by a dedicated agent that produces versioned artifacts in `generated-scenarios/{project}/`. The Conductor coordinates handoffs automatically.
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
@@ -46,7 +46,7 @@ The workflow is a multi-step pipeline. Each step is handled by a dedicated agent
 | 07   | **DemoGuide**    | Produces an audience-aware demo runbook with talking points    | `demoguide/demoguide.md`                              |
 | 08   | **Contribute**   | Publishes scenario to a standalone repo and registers upstream | Standalone repo + registry draft PR                   |
 
-All artifacts land in `scenario/{project}/`, giving you a self-contained, version-controlled demo package.
+All artifacts land in `generated-scenarios/{project}/`, giving you a self-contained, version-controlled demo package.
 
 ## Prerequisites
 
@@ -152,7 +152,7 @@ The agent will:
     ├── azure-diagrams/        # Diagram generation guides
     └── azure-validate/        # Pre/post deployment validation
 
-scenario/                      # Generated demo projects (one folder per scenario)
+generated-scenarios/                      # Generated demo projects (one folder per scenario)
 ├── webvm-sqlvm-bastion-fw/    # Example: VMs + Bastion + Firewall
 │   ├── 01-requirements.md
 │   ├── 02-architecture-assessment.md
@@ -181,7 +181,7 @@ scenario/                      # Generated demo projects (one folder per scenari
 To remove all deployed resources for a scenario:
 
 ```bash
-cd scenario/{project-name}
+cd generated-scenarios/{project-name}
 azd down --force --purge
 ```
 
@@ -201,7 +201,7 @@ We welcome scenario contributions from the community! The contribution model pub
 | Requirement | Purpose |
 |---|---|
 | [GitHub CLI (`gh`)](https://cli.github.com/) | **Required.** The Contribute agent uses `gh` to create repos, fork the upstream project, and open PRs. Install and authenticate with `gh auth login` before contributing. |
-| Completed scenario (Steps 1–6) | Your scenario folder under `scenario/` must contain the required artifacts before contributing. |
+| Completed scenario (Steps 1–6) | Your scenario folder under `generated-scenarios/` must contain the required artifacts before contributing. |
 
 ### Agent-Assisted (Recommended)
 
@@ -219,7 +219,7 @@ The agent performs a sensitive-data check before copying — it will refuse to p
 
 1. Install and authenticate the [GitHub CLI](https://cli.github.com/): `gh auth login`
 2. Create a public repo named `tdd-azd-{your-scenario-name}` in your GitHub account
-3. Copy the publishable artifacts from `scenario/{project}/` to the repo root:
+3. Copy the publishable artifacts from `generated-scenarios/{project}/` to the repo root:
    - `infra/` (Bicep templates), `azure.yaml`, `README.md`
    - `src/` (if webapp), `demoguide/` (if demo guide was generated)
 4. Ensure no sensitive files are included (`.azure/`, `.env`, `bin/`, `obj/`)

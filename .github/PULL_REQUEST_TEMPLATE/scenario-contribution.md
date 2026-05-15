@@ -8,7 +8,7 @@ labels: new-scenario
 
 <!-- Provide a brief description of the demo scenario and its target audience -->
 
-**Project folder**: `scenario/{project-name}/`
+**Project folder**: `generated-scenarios/{project-name}/`
 **Industry**: <!-- e.g., Healthcare, Retail, Finance, Education -->
 
 ## Architecture
@@ -26,9 +26,6 @@ labels: new-scenario
 - [ ] `infra/main.bicep` + modules — Bicep templates
 - [ ] `azure.yaml` — Azure Developer CLI project definition (name: `tdd-azd-{project}`)
 - [ ] `README.md` — Quick-start guide for scenario users
-
-### Recommended
-
 - [ ] `demoguide/demoguide.md` — Demo runbook with talking points
 - [ ] `demoguide/images/*.png` — Screenshots of deployed resources
 - [ ] `infra/main.bicepparam` — Bicep parameter file
@@ -51,7 +48,7 @@ labels: new-scenario
 
 ## Reviewer Guidance
 
-1. Verify Bicep templates lint cleanly: `az bicep build -f scenario/{project}/infra/main.bicep`
+1. Verify Bicep templates lint cleanly: `az bicep build -f generated-scenarios/{project}/infra/main.bicep`
 2. Check `azure.yaml` follows the naming convention: `name: tdd-azd-{project}`
 3. Run `azd up` in a test subscription to validate end-to-end deployment
 4. Review the demo guide for completeness and accuracy

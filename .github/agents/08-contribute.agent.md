@@ -81,15 +81,15 @@ scenario registry via a cross-fork PR.
 ### Phase 0: Parse Input
 
 1. Accept the project folder name from the user or the Conductor handoff
-2. Verify `scenario/{project}/` exists on disk
+2. Verify `generated-scenarios/{project}/` exists on disk
 3. Derive variables:
    - `PROJECT` = the folder name (e.g., `sentinel-threat-detection`)
-   - Read `scenario/{PROJECT}/azure.yaml` and extract the `name:` field
+   - Read `generated-scenarios/{project}/azure.yaml` and extract the `name:` field
    - `REPO_NAME` = `tdd-azd-{name}` (from azure.yaml, e.g., `tdd-azd-sentinel-threat-detection`)
 
 ### Phase 1: Artifact Validation (Pre-Flight)
 
-Scan `scenario/{PROJECT}/` and report a completeness checklist.
+Scan `generated-scenarios/{project}/` and report a completeness checklist.
 
 #### Publishable Artifacts (HARD GATE — all must pass)
 
@@ -115,7 +115,7 @@ If **any** hard-gate artifact is missing, report the failure and **stop**.
 
 #### Sensitive Data Scan (HARD GATE)
 
-Check whether any of these paths exist inside `scenario/{PROJECT}/`:
+Check whether any of these paths exist inside `generated-scenarios/{project}/`:
 
 - `.azure/` directory
 - `**/bin/` directories
@@ -169,7 +169,7 @@ Result: PASS — ready for contribution
 
    Repo:   {CONTRIBUTOR}/{REPO_NAME}
    Name:   {REPO_NAME}
-   Source:  scenario/{PROJECT}/
+   Source:  generated-scenarios/{project}/
 
    Artifacts to publish:
      • infra/ (Bicep templates)
@@ -194,16 +194,16 @@ Result: PASS — ready for contribution
 
 ### Phase 3: Populate Standalone Repo
 
-Copy scenario artifacts from `scenario/{PROJECT}/` to the standalone repo's
+Copy scenario artifacts from `generated-scenarios/{project}/` to the standalone repo's
 root, promoting them from the nested scenario path to a flat `azd`-compatible
 structure:
 
 ```
-scenario/{PROJECT}/infra/       →  {REPO_NAME}/infra/
-scenario/{PROJECT}/src/         →  {REPO_NAME}/src/          (if exists)
-scenario/{PROJECT}/demoguide/   →  {REPO_NAME}/demoguide/    (if exists)
-scenario/{PROJECT}/azure.yaml   →  {REPO_NAME}/azure.yaml
-scenario/{PROJECT}/README.md    →  {REPO_NAME}/README.md
+generated-scenarios/{project}/infra/       →  {REPO_NAME}/infra/
+generated-scenarios/{project}/src/         →  {REPO_NAME}/src/          (if exists)
+generated-scenarios/{project}/demoguide/   →  {REPO_NAME}/demoguide/    (if exists)
+generated-scenarios/{project}/azure.yaml   →  {REPO_NAME}/azure.yaml
+generated-scenarios/{project}/README.md    →  {REPO_NAME}/README.md
 ```
 
 The standalone repo should look like a fresh `azd init` project:

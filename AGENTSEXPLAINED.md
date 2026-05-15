@@ -168,7 +168,7 @@ the Bicep instruction in the context. Examples:
 | `powershell.instructions.md`                | `**/*.ps1, **/*.psm1` | Comment-based help, approved verbs                  |
 | `code-commenting.instructions.md`           | `**`                  | Minimal-comment philosophy across all languages     |
 | `agent-research-first.instructions.md`      | `**/*.agent.md, ...`  | Enforces research-before-implementation             |
-| `azure-artifacts.instructions.md`           | `**/scenario/**/*.md` | Template compliance for generated artifacts         |
+| `azure-artifacts.instructions.md`           | `**/generated-scenarios/**/*.md` | Template compliance for generated artifacts         |
 
 ### Prompts (User Messages)
 
@@ -241,10 +241,10 @@ They complement each other but are loaded through different mechanisms.
 ### Context Flow Between Agents
 
 Agents communicate through **artifact files**, not direct message passing.
-Each agent writes its output to `scenario/{project}/` with a numbered prefix:
+Each agent writes its output to `generated-scenarios/{project}/` with a numbered prefix:
 
 ```
-scenario/{project}/
+generated-scenarios/{project}/
 ├── 01-requirements.md            ← Written by Validations agent
 ├── 02-architecture-assessment.md ← Written by Architect agent
 ├── 03-architect-diagram.py             ← Written by Diagrammer agent
@@ -351,11 +351,11 @@ Conductor receives user prompt
     │   └─ Deploy agent reads infra/, runs azd, writes 06-deployment-summary.md
     │
     └─ runSubagent("07-DemoGuide", "Generate demo guide from all artifacts")
-        └─ DemoGuide agent reads all prior artifacts, writes `scenario/{project}/`demoguide/demoguide.md
+        └─ DemoGuide agent reads all prior artifacts, writes `generated-scenarios/{project}/`demoguide/demoguide.md
 ```
 
 Each subagent runs in isolation with its own context window. The only shared
-state is the file system — specifically the `scenario/{project}/` folder.
+state is the file system — specifically the `generated-scenarios/{project}/` folder.
 
 ## Quick Reference: What Goes Where
 

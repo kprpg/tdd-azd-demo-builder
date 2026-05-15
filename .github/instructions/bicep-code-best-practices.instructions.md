@@ -301,7 +301,7 @@ az deployment group what-if --resource-group rg-example --template-file main.bic
 
 ```bash
 # Navigate to project directory
-cd scenario/{project-name}
+cd generated-scenarios/{project-name}
 
 # Initialize azd environment (first time only)
 azd init

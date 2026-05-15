@@ -16,7 +16,7 @@
 ## 🗂️ File Structure
 
 ```text
-scenario/{project-name}/infra/
+generated-scenarios/{project-name}/infra/
 ├── main.bicep              # Main orchestration template
 ├── main.bicepparam         # Parameter file
 └── modules/
@@ -53,7 +53,7 @@ graph TD
 
 ```bash
 # Deploy with azd
-cd scenario/{project-name}
+cd generated-scenarios/{project-name}
 azd up
 ```
 

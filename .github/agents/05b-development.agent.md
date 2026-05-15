@@ -115,7 +115,7 @@ Azure App Service, Container Apps, ACI, or AKS — never on VM-only scenarios.
 
 - ✅ Read architecture assessment to determine compute target and eligibility
 - ✅ Scaffold using `dotnet new webapp --framework net10.0 --name {ProjectName}.Web`
-- ✅ Place the app under `scenario/{project}/src/{ProjectName}.Web/`
+- ✅ Place the app under `generated-scenarios/{project}/src/{ProjectName}.Web/`
 - ✅ Generate industry-specific models, seed data, and Razor pages
 - ✅ Detect data endpoints in the architecture (Storage Table, SQL, Cosmos DB, etc.)
 - ✅ When a data service exists: use its SDK, connect via managed identity or connection string from app settings, seed sample data on first run
@@ -133,11 +133,11 @@ Azure App Service, Container Apps, ACI, or AKS — never on VM-only scenarios.
 - ❌ Skip `dotnet build` validation
 - ❌ Hardcode Azure-specific config in the app — use environment variables and app settings
 - ❌ Forget to wire the service in `azure.yaml`
-- ❌ Create the `.sln` file in the workspace root — it MUST go in `scenario/{project}/`
+- ❌ Create the `.sln` file in the workspace root — it MUST go in `generated-scenarios/{project}/`
 
 ## Prerequisites Check
 
-Before starting, validate these artifacts exist in `scenario/{project}/`:
+Before starting, validate these artifacts exist in `generated-scenarios/{project}/`:
 
 | Artifact                        | Required | Purpose                                       |
 | ------------------------------- | -------- | --------------------------------------------- |
@@ -168,18 +168,18 @@ Before starting, validate these artifacts exist in `scenario/{project}/`:
 
 ### Phase 2: Scaffold .NET 10 Web App
 
-1. Create project directory: `scenario/{project}/src/{ProjectName}.Web/`
+1. Create project directory: `generated-scenarios/{project}/src/{ProjectName}.Web/`
 2. Run scaffold command:
 
    ```powershell
-   cd scenario/{project}/src
+   cd generated-scenarios/{project}/src
    dotnet new webapp --framework net10.0 --name {ProjectName}.Web --no-https
    ```
 
 3. Create a solution file **in the scenario folder root** (not the workspace root):
 
    ```powershell
-   cd scenario/{project}
+   cd generated-scenarios/{project}
    dotnet new sln --name {ProjectName}
    dotnet sln add src/{ProjectName}.Web/{ProjectName}.Web.csproj
    ```
@@ -216,7 +216,7 @@ If the industry doesn't match a known template, derive 2-4 sensible entities fro
 
 If the compute target is Container Apps, ACI, or AKS:
 
-1. Generate a multi-stage `Dockerfile` in `scenario/{project}/src/{ProjectName}.Web/`:
+1. Generate a multi-stage `Dockerfile` in `generated-scenarios/{project}/src/{ProjectName}.Web/`:
 
    ```dockerfile
    FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
@@ -235,7 +235,7 @@ If the compute target is Container Apps, ACI, or AKS:
 
 ### Phase 5: Wire into azd
 
-Update `scenario/{project}/azure.yaml` to include the webapp as a service:
+Update `generated-scenarios/{project}/azure.yaml` to include the webapp as a service:
 
 **For App Service target:**
 
@@ -274,7 +274,7 @@ services:
 ### Phase 7: Build Validation
 
 ```powershell
-cd scenario/{project}/src/{ProjectName}.Web
+cd generated-scenarios/{project}/src/{ProjectName}.Web
 dotnet build
 ```
 
@@ -284,9 +284,9 @@ If the build fails, fix issues before proceeding.
 
 | File                           | Location                                    | Required    |
 | ------------------------------ | ------------------------------------------- | ----------- |
-| Web App Source                 | `scenario/{project}/src/{ProjectName}.Web/` | Yes         |
-| Dockerfile (container targets) | `scenario/{project}/src/{ProjectName}.Web/` | Conditional |
-| Updated azure.yaml             | `scenario/{project}/azure.yaml`             | Yes         |
+| Web App Source                 | `generated-scenarios/{project}/src/{ProjectName}.Web/` | Yes         |
+| Dockerfile (container targets) | `generated-scenarios/{project}/src/{ProjectName}.Web/` | Conditional |
+| Updated azure.yaml             | `generated-scenarios/{project}/azure.yaml`             | Yes         |
 
 ## Validation Checklist
 

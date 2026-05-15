@@ -84,7 +84,7 @@ with talking points, and produces contingency playbooks for live presentations.
 - ✅ Cross-reference deployed resources from Bicep templates
 - ✅ Generate pre-demo validation commands the presenter can run
 - ✅ **ALWAYS capture screenshots with Playwright MCP** — this is a required deliverable, not optional
-- ✅ Store all screenshots in `scenario/{project}/demoguide/images/`
+- ✅ Store all screenshots in `generated-scenarios/{project}/demoguide/images/`
 - ✅ Verify screenshot files exist on disk before marking Step 6 complete
 
 ### DON'T
@@ -104,9 +104,9 @@ with talking points, and produces contingency playbooks for live presentations.
 
 ### Phase 1: Context Gathering
 
-1. Read `scenario/{project}/01-requirements.md` for business context
-2. Read `scenario/{project}/02-architecture-assessment.md` for resource architecture
-3. Scan `scenario/{project}/infra/` for actual templates (resource names, connection endpoints)
+1. Read `generated-scenarios/{project}/01-requirements.md` for business context
+2. Read `generated-scenarios/{project}/02-architecture-assessment.md` for resource architecture
+3. Scan `generated-scenarios/{project}/infra/` for actual templates (resource names, connection endpoints)
 4. Query Azure for deployed resource details:
 
    ```powershell
@@ -205,7 +205,7 @@ for resource overviews and each demo step.
    (Azure Portal login). Do not proceed until the session is confirmed.
 2. For each major demo section, navigate to the relevant Azure Portal blade
    and capture a screenshot using Playwright MCP `browser_take_screenshot`.
-3. Store all screenshots in `scenario/{project}/demoguide/images/` with
+3. Store all screenshots in `generated-scenarios/{project}/demoguide/images/` with
    descriptive filenames (e.g., `resource-group-overview.png`,
    `vnet-topology.png`, `bastion-connect.png`).
 4. Reference each screenshot in the demo guide using relative paths:
@@ -280,14 +280,14 @@ homepage.png
 
 #### Playwright Script Generation
 
-Generate a `capture_screenshots.py` script in `scenario/{project}/demoguide/`
+Generate a `capture_screenshots.py` script in `generated-scenarios/{project}/demoguide/`
 that captures BOTH categories. The script should:
 
 1. Launch a Chromium browser via Playwright
 2. **App screenshots**: Navigate each app route and capture
 3. **Portal screenshots**: Navigate Azure Portal blades using the resource
    group URL pattern `https://portal.azure.com/#@/resource/subscriptions/{sub}/resourceGroups/{rg}/overview`
-4. Save all images to `scenario/{project}/demoguide/images/`
+4. Save all images to `generated-scenarios/{project}/demoguide/images/`
 
 > **Note on Portal authentication**: Azure Portal screenshots require an
 > authenticated browser session. The script should either:
@@ -309,12 +309,12 @@ that captures BOTH categories. The script should:
 > [!CAUTION]
 > **HARD RULE — OUTPUT PATH**
 >
-> The demo guide MUST be written to `scenario/{project}/demoguide/demoguide.md`.
+> The demo guide MUST be written to `generated-scenarios/{project}/demoguide/demoguide.md`.
 > Do NOT create the file at the scenario root (e.g., `08-demo-guide.md`).
 > The `demoguide/` subfolder is the canonical location for both the markdown
 > file and its `images/` directory.
 
-Generate `scenario/{project}/demoguide/demoguide.md` following the H2 structure
+Generate `generated-scenarios/{project}/demoguide/demoguide.md` following the H2 structure
 from the azure-artifacts skill exactly.
 Ensure all Playwright-captured screenshots from Phase 6 are embedded
 inline next to their corresponding demo steps.
@@ -325,7 +325,7 @@ Before marking Step 6 complete, validate that required screenshots exist on disk
 when Playwright capture was used.
 
 ```powershell
-$imgDir = "scenario/{project}/demoguide/images"
+$imgDir = "generated-scenarios/{project}/demoguide/images"
 $required = @(
    "resource-group-overview.png",
    "firewall-overview.png",
@@ -353,7 +353,7 @@ If Playwright was unavailable or declined by the user, require both of these in
 | `/demoguide/demoguide.md` | Main demo runbook               | Yes      |
 | `demoguide/images/*.png`  | Playwright-captured screenshots | Yes      |
 
-All files saved to `scenario/{project}/`.
+All files saved to `generated-scenarios/{project}/`.
 
 ---
 
@@ -373,9 +373,9 @@ Before marking the demo guide complete:
 - [ ] **Category B (App) screenshots**: homepage + each functional route/page
 - [ ] Demo script includes Portal walkthrough steps (not just webapp routes)
 - [ ] Screenshots referenced inline in the demo guide with `![alt](images/filename.png)` or `<img>` tags
-- [ ] A `capture_screenshots.py` script exists in `scenario/{project}/demoguide/` covering both categories
+- [ ] A `capture_screenshots.py` script exists in `generated-scenarios/{project}/demoguide/` covering both categories
 - [ ] If Portal screenshots require manual capture, this is documented as a pre-demo step
 - [ ] If Playwright is unavailable, fallback placeholders include `TODO: capture screenshot` alt text and a brief reason is documented
 - [ ] Required screenshot files exist on disk (or documented fallback mode is present)
 - [ ] Cross-navigation links to adjacent artifacts are correct
-- [ ] File saved to `scenario/{project}/demoguide/demoguide.md`
+- [ ] File saved to `generated-scenarios/{project}/demoguide/demoguide.md`

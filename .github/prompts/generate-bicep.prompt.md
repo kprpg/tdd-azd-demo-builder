@@ -26,15 +26,15 @@ Bicep modules with security baselines and automated validation.
 
 ## Scope & Preconditions
 
-- `scenario/${input:projectName}/02-architecture-assessment.md` must exist
+- `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
 - Read `.github/skills/SKILL.md` for naming, tags, AVM, security, templates, and Bicep patterns
-- Templates saved to `scenario/${input:projectName}/infra/` and compatible with `azd provision`
+- Templates saved to `generated-scenarios/${input:projectName}/infra/` and compatible with `azd provision`
 
 ## Inputs
 
 | Variable               | Description                                  | Default  |
 | ---------------------- | -------------------------------------------- | -------- |
-| `${input:projectName}` | Project name matching the `scenario/` folder | Required |
+| `${input:projectName}` | Project name matching the `generated-scenarios/` folder | Required |
 
 ## Workflow
 
@@ -43,7 +43,7 @@ Bicep modules with security baselines and automated validation.
 1. Verify Azure connectivity (`az account show`)
 2. Query ALL effective policy assignments via REST API
 3. Classify policy effects — `Deny` policies are hard blockers
-4. Save to `scenario/{projectName}/04-governance-constraints.md` and `.json`
+4. Save to `generated-scenarios/{projectName}/04-governance-constraints.md` and `.json`
 
 ### Step 2: AVM Verification & Deployment Strategy
 
@@ -64,12 +64,12 @@ Generate templates following dependency order:
 
 1. Run `bicep build main.bicep` — fix any errors
 2. Run `bicep lint main.bicep` — fix any warnings
-3. Save `scenario/{projectName}/05-implementation-reference.md`
+3. Save `generated-scenarios/{projectName}/05-implementation-reference.md`
 
 ## Output Expectations
 
 ```text
-scenario/{projectName}/infra/
+generated-scenarios/{projectName}/infra/
 ├── main.bicep
 ├── main.bicepparam
 ├── modules/

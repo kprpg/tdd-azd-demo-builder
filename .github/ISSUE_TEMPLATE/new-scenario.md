@@ -8,7 +8,7 @@ labels: new-scenario
 
 <!-- Describe the demo scenario, its purpose, and target audience -->
 
-**Project folder**: `scenario/{project-name}/`
+**Project folder**: `generated-scenarios/{project-name}/`
 **Industry**: <!-- e.g., Healthcare, Retail, Finance, Education -->
 
 ## Azure Services

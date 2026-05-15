@@ -81,7 +81,7 @@ Conductor for the Azure demo builder workflow.
 > without interactive confirmation.
 >
 > 1. Parse scenario → derive project folder name automatically
-> 2. Create `scenario/{project}/`
+> 2. Create `generated-scenarios/{project}/`
 > 3. THEN read skills and delegate
 
 ## MANDATORY: Read Skills (After Project Name, Before Delegating)
@@ -104,9 +104,9 @@ Conductor for the Azure demo builder workflow.
 
 - ✅ Continue automatically from one delegated step to the next
 - ✅ Delegate to subagents via `#runSubagent` for each workflow step
-- ✅ Track progress by checking artifact files in `scenario/{project}/`
+- ✅ Track progress by checking artifact files in `generated-scenarios/{project}/`
 - ✅ Summarize subagent results concisely (don't dump raw output)
-- ✅ Create `scenario/{project}/` directory at project start
+- ✅ Create `generated-scenarios/{project}/` directory at project start
 
 ### DON'T
 
@@ -142,7 +142,7 @@ Step 6: Contribute      →  standalone repo + scenarios/registry.json PR (user-
 
 ```text
 📋 REQUIREMENTS COMPLETE
-Artifact: scenario/{project}/01-requirements.md
+Artifact: generated-scenarios/{project}/01-requirements.md
 ✅ Next: Architecture Assessment (Step 2)
 ➡️ Continue automatically to Architecture Assessment (Step 2)
 ```
@@ -151,7 +151,7 @@ Artifact: scenario/{project}/01-requirements.md
 
 ```text
 🏗️ ARCHITECTURE ASSESSMENT COMPLETE
-Artifact: scenario/{project}/02-architecture-assessment.md
+Artifact: generated-scenarios/{project}/02-architecture-assessment.md
 ✅ Next: Bicep (Step 3)
 ➡️ Continue automatically to Bicep (Step 3)
 ```
@@ -160,9 +160,9 @@ Artifact: scenario/{project}/02-architecture-assessment.md
 
 ```text
 🔧 BICEP COMPLETE
-Templates: scenario/{project}/infra/
-Diagram:   scenario/{project}/04-runtime-diagram.png
-AZD config: scenario/{project}/azure.yaml
+Templates: generated-scenarios/{project}/infra/
+Diagram:   generated-scenarios/{project}/04-runtime-diagram.png
+AZD config: generated-scenarios/{project}/azure.yaml
 ✅ Next: Development (Step 3b) or Deploy (Step 4)
 ➡️ If sample webapp requested: continue to Development (Step 3b)
 ➡️ If no webapp requested or VM-only: skip to Deploy (Step 4)
@@ -172,8 +172,8 @@ AZD config: scenario/{project}/azure.yaml
 
 ```text
 🧑‍💻 DEVELOPMENT COMPLETE
-Source: scenario/{project}/src/{ProjectName}.Web/
-azd wiring: scenario/{project}/azure.yaml (services block added)
+Source: generated-scenarios/{project}/src/{ProjectName}.Web/
+azd wiring: generated-scenarios/{project}/azure.yaml (services block added)
 ✅ Next: Deploy (Step 4)
 ➡️ Continue automatically to Deploy (Step 4)
 ```
@@ -182,7 +182,7 @@ azd wiring: scenario/{project}/azure.yaml (services block added)
 
 ```text
 🚀 DEPLOYMENT COMPLETE
-README: scenario/{project}/README.md
+README: generated-scenarios/{project}/README.md
 ✅ Next: Demo Guide (Step 5)
 ➡️ Continue automatically to Demo Guide (Step 5)
 ```
@@ -206,7 +206,7 @@ README: scenario/{project}/README.md
 > **MANDATORY — Verify Playwright screenshots exist before marking complete.**
 > After the DemoGuide agent completes, check that:
 >
-> - `scenario/{project}/demoguide/images/` contains screenshot PNGs, OR
+> - `generated-scenarios/{project}/demoguide/images/` contains screenshot PNGs, OR
 > - The demo guide explicitly documents why screenshots could not be captured
 >
 > If screenshots are missing without explanation, **send the DemoGuide agent back**
@@ -214,8 +214,8 @@ README: scenario/{project}/README.md
 
 ```text
 🎬 DEMO GUIDE COMPLETE
-Artifact: scenario/{project}/demoguide/demoguide.md
-Screenshots: scenario/{project}/demoguide/images/*.png (MANDATORY)
+Artifact: generated-scenarios/{project}/demoguide/demoguide.md
+Screenshots: generated-scenarios/{project}/demoguide/images/*.png (MANDATORY)
 ✅ Playwright screenshots captured or fallback documented
 ➡️ Continue to Contribution offer (Checkpoint 6)
 ```
@@ -227,7 +227,7 @@ the option to submit their scenario to the upstream project:
 
 ```text
 🎉 WORKFLOW COMPLETE
-Scenario: scenario/{project}/
+Scenario: generated-scenarios/{project}/
 
 Production artifacts: infra/, azure.yaml, README.md, demoguide/, 04-runtime-diagram.png
                       + src/ (if webapp was generated)
@@ -265,13 +265,13 @@ Use `#runSubagent` for each workflow step:
 
 - Use the derived name directly unless the user explicitly provides an override
 
-2. Create `scenario/{project-name}/`
+2. Create `generated-scenarios/{project-name}/`
 3. Delegate to Requirements agent for Step 1
 4. Continue through workflow automatically
 
 ## Resuming a Project
 
-1. Scan `scenario/{project-name}/` and identify the last completed step using the table above.
+1. Scan `generated-scenarios/{project-name}/` and identify the last completed step using the table above.
 2. If `demoguide/demoguide.md` and `infra/main.bicep` both exist, the scenario is **fully complete** — notify the user.
 3. Otherwise, continue automatically from the next incomplete step.
 

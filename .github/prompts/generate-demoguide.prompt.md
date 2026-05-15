@@ -30,18 +30,18 @@ follow to deliver a successful live demonstration.
 
 ## Scope & Preconditions
 
-- `scenario/${input:projectName}/02-architecture-assessment.md` must exist
-- `scenario/${input:projectName}/05-implementation-reference.md` should exist (or `04-implementation-plan.md` at minimum)
-- `scenario/${input:projectName}/06-deployment-summary.md` should exist (deployed resources and outputs feed the demo guide)
+- `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
+- `generated-scenarios/${input:projectName}/05-implementation-reference.md` should exist (or `04-implementation-plan.md` at minimum)
+- `generated-scenarios/${input:projectName}/06-deployment-summary.md` should exist (deployed resources and outputs feed the demo guide)
 - Read `.github/skills/SKILL.md` for naming conventions, template H2 structure, and demo patterns/personas
-- Output saved to `scenario/${input:projectName}/demoguide/demoguide.md`
-- Include Playwright MCP generated screenshots of the different demo steps; store these in `scenario/${input:projectName}/demoguide/images/` and reference them in the demoguide.md. To make this possible, prompt the user for an authenticated Playwright browser session. Use that session to loop through the demo steps.
+- Output saved to `generated-scenarios/${input:projectName}/demoguide/demoguide.md`
+- Include Playwright MCP generated screenshots of the different demo steps; store these in `generated-scenarios/${input:projectName}/demoguide/images/` and reference them in the demoguide.md. To make this possible, prompt the user for an authenticated Playwright browser session. Use that session to loop through the demo steps.
 
 ## Inputs
 
 | Variable               | Description                                      | Default   |
 | ---------------------- | ------------------------------------------------ | --------- |
-| `${input:projectName}` | Project name matching the `scenario/` folder | Required  |
+| `${input:projectName}` | Project name matching the `generated-scenarios/` folder | Required  |
 
 ## Workflow
 
@@ -54,7 +54,7 @@ Read all available project artifacts in order:
 3. `04-implementation-plan.md` — resource inventory, dependencies
 4. `05-implementation-reference.md` — deployment details, file structure
 5. `06-deployment-summary.md` — deployed resources, outputs, endpoints
-6. `scenario/{projectName}/infra/` or `scenario/{projectName}/infra/terraform/` — actual templates
+6. `generated-scenarios/{projectName}/infra/` or `generated-scenarios/{projectName}/infra/terraform/` — actual templates
 
 ### Step 2: Generate Pre-Demo Checklist
 
@@ -74,12 +74,12 @@ For each major feature or resource:
 
 ### Step 4: Create relevant demo screenshots
 
-Use Playwright MCP tools to capture screenshots of the deployed resources in the Azure Portal. Store these in `scenario/${input:projectName}/demoguide/images/` and reference them in the demo guide next to the relevant steps.
+Use Playwright MCP tools to capture screenshots of the deployed resources in the Azure Portal. Store these in `generated-scenarios/${input:projectName}/demoguide/images/` and reference them in the demo guide next to the relevant steps.
 
 ### Step 5: Validate screenshot files
 
 If Playwright capture was used, validate required screenshots exist in
-`scenario/${input:projectName}/demoguide/images/` before finalizing.
+`generated-scenarios/${input:projectName}/demoguide/images/` before finalizing.
 
 Minimum required files:
 
@@ -95,7 +95,7 @@ If Playwright is unavailable or declined, require:
 
 ### Step 6: Save Artifact
 
-Save to `scenario/{projectName}//demoguide/demoguide.md` following the
+Save to `generated-scenarios/{projectName}//demoguide/demoguide.md` following the
 exact H2 structure defined in the azure-artifacts skill.
 
 ## Quality Checklist

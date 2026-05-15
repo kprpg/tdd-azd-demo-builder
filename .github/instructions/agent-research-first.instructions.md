@@ -1,6 +1,6 @@
 ---
 description: "MANDATORY research-before-implementation requirements for all agents"
-applyTo: "**/*.agent.md, **/scenario/**/*.md, **/.github/skills/**/SKILL.md"
+applyTo: "**/*.agent.md, **/generated-scenarios/**/*.md, **/.github/skills/**/SKILL.md"
 ---
 
 # Agent Research Requirements
@@ -14,7 +14,7 @@ without missing context or requiring multiple iterations.
 
 Before creating ANY output files or making changes, agents MUST:
 
-- [ ] **Search workspace** for existing patterns (`scenario/`, similar projects, templates)
+- [ ] **Search workspace** for existing patterns (`generated-scenarios/`, similar projects, templates)
 - [ ] **Read relevant templates** in `.github/skills/azure-artifacts/templates/` for output structure
 - [ ] **Query documentation** via MCP tools (Azure docs, best practices)
 - [ ] **Validate inputs** - confirm all required artifacts from previous steps exist

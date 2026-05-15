@@ -25,7 +25,7 @@ azd integration.
 Every sample webapp follows this layout:
 
 ```text
-scenario/{project}/src/{ProjectName}.Web/
+generated-scenarios/{project}/src/{ProjectName}.Web/
 ├── {ProjectName}.Web.csproj
 ├── Program.cs
 ├── appsettings.json

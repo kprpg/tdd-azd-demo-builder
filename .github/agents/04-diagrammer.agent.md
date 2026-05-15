@@ -94,12 +94,12 @@ tools:
 - ✅ Use the `azure-diagrams` skill for Python architecture diagrams
 - ✅ Use the `SKILLS.md` skill file for any details
 - ✅ Generate **both** the architecture diagram AND the runtime flow diagram — both are required
-- ✅ Save architecture diagram to `scenario/{project}/03-architect-diagram.py`
-- ✅ Save runtime flow diagram to `scenario/{project}/03-architect-runtime-diagram.py`
+- ✅ Save architecture diagram to `generated-scenarios/{project}/03-architect-diagram.py`
+- ✅ Save runtime flow diagram to `generated-scenarios/{project}/03-architect-runtime-diagram.py`
 - ✅ Execute both Python scripts to generate PNGs and verify the images exist on disk
 - ✅ Include all Azure resources from the architecture in diagrams
 - ✅ Show data flows, request paths, and authentication flows in the runtime diagram
-- ✅ Update `scenario/{project}/README.md`
+- ✅ Update `generated-scenarios/{project}/README.md`
 
 ### DON'T
 
@@ -113,7 +113,7 @@ tools:
 
 ## Prerequisites Check
 
-Before starting, validate `02-architecture-assessment.md` exists in `scenario/{project}/`.
+Before starting, validate `02-architecture-assessment.md` exists in `generated-scenarios/{project}/`.
 If missing, STOP and request handoff to Architect agent.
 
 ## Workflow
@@ -122,8 +122,8 @@ If missing, STOP and request handoff to Architect agent.
 
 1. Read `02-architecture-assessment.md` for resource list, boundaries, and flows
 2. Read `01-requirements.md` for business-critical paths and actor context
-3. Generate `scenario/{project}/03-architect-diagram.py` using the azure-diagrams contract
-4. Execute `python3 scenario/{project}/03-architect-diagram.py`
+3. Generate `generated-scenarios/{project}/03-architect-diagram.py` using the azure-diagrams contract
+4. Execute `python3 generated-scenarios/{project}/03-architect-diagram.py`
 5. Validate quality gate score (>=9/10); regenerate once if below threshold
 6. Verify `03-architect-diagram.png` exists on disk
 
@@ -139,25 +139,25 @@ If missing, STOP and request handoff to Architect agent.
    - Authentication flows (Managed Identity, Entra ID)
    - Monitoring/telemetry flows (App Insights, Log Analytics)
    - Event/message flows (Service Bus, Event Grid) if applicable
-2. Generate `scenario/{project}/03-architect-runtime-diagram.py` using the azure-diagrams contract
+2. Generate `generated-scenarios/{project}/03-architect-runtime-diagram.py` using the azure-diagrams contract
    - Use `direction="LR"` (left-to-right) to show flow direction clearly
    - Use `Edge(label="...")` with flow taxonomy labels (request, read, write, auth, telemetry, etc.)
    - Use `Edge(style="dashed")` for config/secret flows
    - Group resources into Clusters matching the Azure hierarchy
-3. Execute `python3 scenario/{project}/03-architect-runtime-diagram.py`
+3. Execute `python3 generated-scenarios/{project}/03-architect-runtime-diagram.py`
 4. Validate quality gate score (>=9/10); regenerate once if below threshold
 5. Verify `03-architect-runtime-diagram.png` exists on disk
 
 ### Phase 3: ADR Generation
 
-Generate `scenario/{project}/03-architect-adr.md` documenting key architecture decisions.
+Generate `generated-scenarios/{project}/03-architect-adr.md` documenting key architecture decisions.
 
 ### Phase 4: Completion Validation
 
 Before marking Step 3 complete, verify ALL outputs exist:
 
 ```powershell
-$project = "scenario/{project}"
+$project = "generated-scenarios/{project}"
 @(
   "$project/03-architect-diagram.py",
   "$project/03-architect-diagram.png",
@@ -175,11 +175,11 @@ If any mandatory file is missing, fix and regenerate before proceeding.
 
 | File                         | Location                                              | Required |
 | ---------------------------- | ----------------------------------------------------- | -------- |
-| Architecture Diagram Source  | `scenario/{project}/03-architect-diagram.py`          | Yes      |
-| Architecture Diagram Image   | `scenario/{project}/03-architect-diagram.png`         | Yes      |
-| Runtime Flow Diagram Source  | `scenario/{project}/03-architect-runtime-diagram.py`  | Yes      |
-| Runtime Flow Diagram Image   | `scenario/{project}/03-architect-runtime-diagram.png` | Yes      |
-| Architecture Decision Record | `scenario/{project}/03-architect-adr.md`              | Yes      |
+| Architecture Diagram Source  | `generated-scenarios/{project}/03-architect-diagram.py`          | Yes      |
+| Architecture Diagram Image   | `generated-scenarios/{project}/03-architect-diagram.png`         | Yes      |
+| Runtime Flow Diagram Source  | `generated-scenarios/{project}/03-architect-runtime-diagram.py`  | Yes      |
+| Runtime Flow Diagram Image   | `generated-scenarios/{project}/03-architect-runtime-diagram.png` | Yes      |
+| Architecture Decision Record | `generated-scenarios/{project}/03-architect-adr.md`              | Yes      |
 
 ## Validation Checklist
 
@@ -188,4 +188,4 @@ If any mandatory file is missing, fix and regenerate before proceeding.
 - [ ] **Runtime flow diagram generated** with data paths, request flows, and auth flows
 - [ ] **Both PNGs verified on disk** — do not skip this check
 - [ ] ADR generated with key architecture decisions
-- [ ] All output files saved to `scenario/{project}/`
+- [ ] All output files saved to `generated-scenarios/{project}/`

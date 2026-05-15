@@ -70,7 +70,7 @@ tools:
 > Your **first action** MUST be to verify `01-requirements.md` exists and contains
 > the information below. Do NOT read skills or templates before this step.
 
-Validate `01-requirements.md` exists in `scenario/{project}/`.
+Validate `01-requirements.md` exists in `generated-scenarios/{project}/`.
 If missing, STOP and request handoff to Requirements agent.
 
 Verify these are documented — **auto-default if missing**:
@@ -153,7 +153,7 @@ Proceed directly to Bicep Planning after publishing this summary.
 
 | File       | Location                                           | Template                   |
 | ---------- | -------------------------------------------------- | -------------------------- |
-| Assessment | `scenario/{project}/02-architecture-assessment.md` | From azure-artifacts skill |
+| Assessment | `generated-scenarios/{project}/02-architecture-assessment.md` | From azure-artifacts skill |
 
 Include attribution header from the template file (do not hardcode).
 
@@ -166,4 +166,4 @@ Include attribution header from the template file (do not hardcode).
 - [ ] AVM modules recommended where available
 - [ ] Trade-offs explicitly documented
 - [ ] Handoff summary presented before automatic delegation
-- [ ] File saved to `scenario/{project}/`
+- [ ] File saved to `generated-scenarios/{project}/`

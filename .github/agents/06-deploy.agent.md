@@ -106,9 +106,9 @@ resources, and produces a deployment summary artifact.
 - ✅ Run `bicep build` and `bicep lint` as a final gate before deploying
 - ✅ Execute what-if analysis (`az deployment group what-if`) before actual deployment
 - ✅ Prompt the user for confirmation before executing the actual deployment
-- ✅ Use `azd up` when `azure.yaml` exists in `scenario/{project}/`
+- ✅ Use `azd up` when `azure.yaml` exists in `generated-scenarios/{project}/`
 - ✅ Validate deployed resources after deployment completes
-- ✅ Generate `scenario/{project}/README.md` — standalone quickstart for the scenario
+- ✅ Generate `generated-scenarios/{project}/README.md` — standalone quickstart for the scenario
 - ✅ Handle deployment failures gracefully with clear error messages and rollback guidance
 - ✅ **ALWAYS attempt `azd up`** — never skip deployment autonomously
 - ✅ **ALWAYS prompt the user on failure** — present errors and ask for a decision
@@ -128,7 +128,7 @@ resources, and produces a deployment summary artifact.
 
 ## Prerequisites Check
 
-Before starting, validate these artifacts exist in `scenario/{project}/`:
+Before starting, validate these artifacts exist in `generated-scenarios/{project}/`:
 
 | Artifact                | Required | Purpose                                    |
 | ----------------------- | -------- | ------------------------------------------ |
@@ -164,8 +164,8 @@ If `main.bicep` is missing, STOP and request handoff to the Bicep agent.
 3. **Final template validation**:
 
    ```powershell
-   az bicep build --file scenario/{project}/infra/main.bicep
-   az bicep lint --file scenario/{project}/infra/main.bicep
+   az bicep build --file generated-scenarios/{project}/infra/main.bicep
+   az bicep lint --file generated-scenarios/{project}/infra/main.bicep
    ```
 
 4. **Check resource provider registration** for all services in the plan:
@@ -181,8 +181,8 @@ Run what-if to preview changes before deploying:
 ```powershell
 az deployment group what-if `
   --resource-group {rg-name} `
-  --template-file scenario/{project}/infra/main.bicep `
-  --parameters scenario/{project}/infra/main.bicepparam
+  --template-file generated-scenarios/{project}/infra/main.bicep `
+  --parameters generated-scenarios/{project}/infra/main.bicepparam
 ```
 
 Present the what-if summary to the user:
@@ -221,7 +221,7 @@ If the user declines, present the what-if summary and wait for further instructi
 Deploy using `azd up`:
 
 ```powershell
-cd scenario/{project}
+cd generated-scenarios/{project}
 azd up --no-prompt
 ```
 
@@ -271,7 +271,7 @@ After deployment completes:
 
 ### Phase 6: Scenario README Generation
 
-After a successful deployment, generate `scenario/{project}/README.md` — a
+After a successful deployment, generate `generated-scenarios/{project}/README.md` — a
 standalone quickstart file that describes the scenario and how to deploy it.
 This file is the entry point for anyone who receives the scenario as its own
 repo (via the Contribute agent or manual export).
@@ -385,7 +385,7 @@ How would you like to proceed?
 
 | File            | Location                       | Required |
 | --------------- | ------------------------------ | -------- |
-| Scenario README | `scenario/{project}/README.md` | Yes      |
+| Scenario README | `generated-scenarios/{project}/README.md` | Yes      |
 
 ## Validation Checklist
 

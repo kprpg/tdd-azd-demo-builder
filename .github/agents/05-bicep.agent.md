@@ -103,7 +103,7 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 - ✅ Accept `principalId` parameter in `main.bicep` (azd auto-populates from signed-in user via `AZURE_PRINCIPAL_ID`)
 - ✅ Assign deployer data plane RBAC roles on every RBAC-enabled resource (Key Vault, Storage, Cosmos DB, Service Bus, etc.)
 - ✅ Use `principalType: 'User'` for the deployer role assignments (not `ServicePrincipal`)
-- ✅ Generate or update `scenario/{project}/azure.yaml` with `infra.path: ./infra` for AZD compatibility
+- ✅ Generate or update `generated-scenarios/{project}/azure.yaml` with `infra.path: ./infra` for AZD compatibility
 - ✅ Generate `.bicepparam` parameter file for each environment
 - ✅ If strategy is phased: add `phase` parameter to `main.bicep` that conditionally deploys resource groups per phase
 - ✅ Run `bicep build` and `bicep lint` after generating templates
@@ -133,7 +133,7 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 
 ## Prerequisites Check
 
-Before starting, validate `02-architecture-assessment.md` exists in `scenario/{project}/`.
+Before starting, validate `02-architecture-assessment.md` exists in `generated-scenarios/{project}/`.
 If missing, STOP and request handoff to Architect agent.
 
 Read for context:
@@ -270,16 +270,16 @@ After each round: run `bicep build` to catch errors early.
 
 Run validation directly:
 
-- `bicep lint scenario/{project}/infra/main.bicep` — fix any warnings
-- `bicep build scenario/{project}/infra/main.bicep` — fix any errors
+- `bicep lint generated-scenarios/{project}/infra/main.bicep` — fix any warnings
+- `bicep build generated-scenarios/{project}/infra/main.bicep` — fix any errors
 - If either fails: fix issues and re-run until both pass
 
 After templates pass validation, generate the runtime diagram:
 
-1. Write `scenario/{project}/04-runtime-diagram.py` (azure-diagrams-style, reflects the actual deployed topology)
-2. Execute the script: `python scenario/{project}/04-runtime-diagram.py`
-3. Verify `scenario/{project}/04-runtime-diagram.png` exists on disk
-4. **Delete** `scenario/{project}/04-runtime-diagram.py` — the source file is not needed after the PNG is produced
+1. Write `generated-scenarios/{project}/04-runtime-diagram.py` (azure-diagrams-style, reflects the actual deployed topology)
+2. Execute the script: `python generated-scenarios/{project}/04-runtime-diagram.py`
+3. Verify `generated-scenarios/{project}/04-runtime-diagram.png` exists on disk
+4. **Delete** `generated-scenarios/{project}/04-runtime-diagram.py` — the source file is not needed after the PNG is produced
 
 > [!CAUTION]
 > The PNG is a **mandatory** deliverable. Do not mark this phase complete
@@ -288,7 +288,7 @@ After templates pass validation, generate the runtime diagram:
 ## File Structure
 
 ```text
-scenario/{project}/infra/
+generated-scenarios/{project}/infra/
 ├── main.bicep              # Entry point — uniqueSuffix, orchestrates modules
 ├── main.bicepparam         # Environment-specific parameters
 └── modules/
@@ -328,9 +328,9 @@ module networking 'modules/networking.bicep' = { ... }
 
 | File                     | Location                                    | Notes                                           |
 | ------------------------ | ------------------------------------------- | ----------------------------------------------- |
-| IaC Templates            | `scenario/{project}/infra/`                 | Permanent — the deployable infrastructure       |
-| AZD Project Config       | `scenario/{project}/azure.yaml`             | Permanent — required for `azd provision`        |
-| Runtime Diagram (PNG)    | `scenario/{project}/04-runtime-diagram.png` | Permanent — architecture reference              |
+| IaC Templates            | `generated-scenarios/{project}/infra/`                 | Permanent — the deployable infrastructure       |
+| AZD Project Config       | `generated-scenarios/{project}/azure.yaml`             | Permanent — required for `azd provision`        |
+| Runtime Diagram (PNG)    | `generated-scenarios/{project}/04-runtime-diagram.png` | Permanent — architecture reference              |
 
 > [!NOTE]
 > Governance constraints, implementation plan, preflight results, and implementation

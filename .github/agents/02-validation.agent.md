@@ -176,9 +176,9 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 
 ### Auto-Save (Before Handoff)
 
-1. Create `scenario/{project}/` if needed
-2. Save to `scenario/{project}/01-requirements.md`
-3. **Create `scenario/{project}/README.md`** using `PROJECT-README.template.md` as skeleton:
+1. Create `generated-scenarios/{project}/` if needed
+2. Save to `generated-scenarios/{project}/01-requirements.md`
+3. **Create `generated-scenarios/{project}/README.md`** using `PROJECT-README.template.md` as skeleton:
    - Mark Step 1 as complete, all other steps as Pending
    - Populate Project Summary with project name, region, environment from requirements
    - Set status badge to `In Progress`, step badge to `Step 1 of 5`
@@ -200,7 +200,7 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 - ✅ Infer workload pattern from business signals, then **include in draft for user review**
 - ✅ Pre-select compliance frameworks based on industry (from azure-defaults skill)
 - ✅ Use business-friendly labels with Azure names in parentheses
-- ✅ Auto-save to `scenario/{project}/01-requirements.md` before handoff
+- ✅ Auto-save to `generated-scenarios/{project}/01-requirements.md` before handoff
 - ✅ Only proceed to document generation after ALL phases have been processed
 - ✅ Match H2 headings from azure-artifacts skill exactly
 
@@ -208,7 +208,7 @@ These skills are your single source of truth. Do NOT use hardcoded values.
 
 - ❌ **NEVER read skills or templates before processing Phases 1-4 from the scenario**
 - ❌ **NEVER call `create_file` or `edit` tools before Phases 1-4 are complete**
-- ❌ Create ANY files other than `scenario/{project}/01-requirements.md` and `scenario/{project}/README.md`
+- ❌ Create ANY files other than `generated-scenarios/{project}/01-requirements.md` and `generated-scenarios/{project}/README.md`
 - ❌ Modify existing Bicep code or implement infrastructure
 - ❌ Show Bicep code blocks — describe requirements, not implementation
 - ❌ Skip Phase 1 business discovery

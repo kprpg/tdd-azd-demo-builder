@@ -12,7 +12,7 @@ with Ruff for linting and formatting.
 
 Python is used for three purposes in this repo:
 
-1. **Architecture diagrams** — `diagrams` library scripts in `scenario/` and `.github/skills/`
+1. **Architecture diagrams** — `diagrams` library scripts in `generated-scenarios/` and `.github/skills/`
 2. **Azure Pricing MCP server** — async `aiohttp`/`starlette` server in `mcp/azure-pricing-mcp/`
 3. **Utility scripts** — Checkov scanning, diagram verification
 

@@ -65,39 +65,10 @@ venv/
 TestResults/
 *.trx
 
-# Personal notes
-NOTES.md
-TODO.md
-Copilot-Processing.md
-scratch/
-
-# Extracted sample apps (use .zip files instead to avoid Dependabot alerts)
-scenarios/S06-sbom-generator/sample-app/
-freshness-report.json
-
-# Publish output and deployment artifacts
-**/publish/
-**/applogs/
-**/deploy.zip
-
-# Baseline snapshots (local working data for context optimizer)
-scenario/_baselines/
-
-# Terraform
-*.tfstate
-*.tfstate.backup
-.terraform/
-*.tfvars
-!terraform.tfvars.example
-crash.log
-crash.*.log
-.infracost/
-# DO NOT ignore .terraform.lock.hcl — it must be committed for reproducible provider versions
-
 # Demo Scenario folder — ignored by default so agent-generated scenarios
 # stay local. The 08-Contribute agent uses `git add -f` to selectively
 # stage a single scenario for cross-fork PRs.
-scenario/
+generated-scenarios/
 
 # Playwright screenshot artifacts
 .playwright-mcp/

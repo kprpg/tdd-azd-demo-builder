@@ -36,7 +36,7 @@ Choose the deployment method based on available project artifacts:
 
 | Method                   | When to Use                                  | Prerequisites                                       |
 | ------------------------ | -------------------------------------------- | --------------------------------------------------- |
-| **`azd up`** (preferred) | `azure.yaml` exists in `scenario/{project}/` | Azure Developer CLI installed, `az login` completed |
+| **`azd up`** (preferred) | `azure.yaml` exists in `generated-scenarios/{project}/` | Azure Developer CLI installed, `az login` completed |
 
 ### Decision Tree
 
@@ -57,7 +57,7 @@ azure.yaml exists?
 azd version
 
 # Initialize environment (first time only)
-cd scenario/{project}
+cd generated-scenarios/{project}
 azd init
 
 # Set environment name
@@ -70,7 +70,7 @@ azd env set AZURE_LOCATION eastus2
 `azd up` provisions infrastructure AND deploys application code in one step:
 
 ```powershell
-cd scenario/{project}
+cd generated-scenarios/{project}
 
 # Interactive mode (prompts for subscription, location)
 azd up
@@ -101,7 +101,7 @@ azd deploy
 
 ### azure.yaml Structure
 
-The `azure.yaml` file must be in `scenario/{project}/` root:
+The `azure.yaml` file must be in `generated-scenarios/{project}/` root:
 
 ```yaml
 name: tdd-azd-{project}
@@ -114,7 +114,7 @@ infra:
 
 > [!IMPORTANT]
 > The `infra.path` must point to the directory containing `main.bicep`.
-> For this project, that's `./infra` (relative to `scenario/{project}/`).
+> For this project, that's `./infra` (relative to `generated-scenarios/{project}/`).
 
 ### azd Environment Variables
 
