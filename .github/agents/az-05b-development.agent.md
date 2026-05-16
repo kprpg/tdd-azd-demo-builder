@@ -1,5 +1,5 @@
 ---
-name: 05b-Development
+name: az-05b-Development
 description: Scaffolds and generates a .NET 10 C# sample web application tailored to the project's business industry. Uses Azure data services (Storage Table, SQL, Cosmos DB, etc.) when present in the architecture, falling back to local JSON seed data only when no data endpoint exists. Supports App Service, Container Apps, ACI, and AKS deployment targets. Skips VM-only scenarios.
 model: "Claude Opus 4.6"
 user-invokable: true
@@ -73,9 +73,9 @@ Azure App Service, Container Apps, ACI, or AKS — never on VM-only scenarios.
 
 **Before doing ANY work**, read these skills:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, AVM, Bicep patterns, artifacts, diagrams, demo guide)
-2. **Read** `.github/skills/webapp-development/SKILL.md` — webapp scaffolding patterns, industry data templates, Dockerfile, azd service wiring
-3. **Read** `.github/instructions/dotnet-webapp.instructions.md` — .NET 10 coding standards, project structure, sample data patterns
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, AVM, Bicep patterns, artifacts, diagrams, demo guide)
+2. **Read** `.github/skills/az-webapp-development/SKILL.md` — webapp scaffolding patterns, industry data templates, Dockerfile, azd service wiring
+3. **Read** `.github/instructions/az-dotnet-webapp.instructions.md` — .NET 10 coding standards, project structure, sample data patterns
 
 ## Eligibility Check
 

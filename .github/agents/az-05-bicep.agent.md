@@ -1,5 +1,5 @@
 ---
-name: 05-Bicep
+name: az-05-Bicep
 description: Plans governance-aware Azure implementations and generates near-production-ready Bicep templates using Azure Verified Modules. Covers the full lifecycle from governance discovery and implementation planning through code generation and validation.
 model: "Claude Opus 4.6"
 user-invokable: true
@@ -72,12 +72,12 @@ the Deploy agent (Step 5) handles the actual Azure deployment.
 
 **Before doing ANY work**, read these skills:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, AVM, Bicep patterns, artifacts, diagrams, demo guide, **azure.yaml naming convention**)
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, AVM, Bicep patterns, artifacts, diagrams, demo guide, **azure.yaml naming convention**)
 2. **Read** `.github/skills/microsoft-code-reference/SKILL.md` — verify AVM module parameters,
    check API versions, find correct Bicep patterns via official docs
-4. **Read** `.github/instructions/bicep-policy-compliance.instructions.md` — governance
+4. **Read** `.github/instructions/az-bicep-policy-compliance.instructions.md` — governance
    compliance mandate, dynamic tag list, anti-patterns
-5. **Read** `.github/instructions/bicep-code-best-practices.instructions.md` — Bicep coding
+5. **Read** `.github/instructions/az-bicep-code-best-practices.instructions.md` — Bicep coding
    standards, validation commands, and **azure.yaml naming convention** (`tdd-azd-{project}`)
 
 These skills are your single source of truth. Do NOT use hardcoded values.
@@ -262,7 +262,7 @@ Build templates in dependency order.
 - Role assignments (managed identity → Key Vault, Storage, etc.)
 - **Deployer RBAC**: Assign data plane roles to the `principalId` parameter (the deploying user) on every
   RBAC-enabled resource. Use `principalType: 'User'`. See the "Deployer Data Plane Access" pattern
-  in `.github/skills/SKILL.md` for the role mapping table and Bicep pattern.
+  in `.github/skills/az-consolidated/SKILL.md` for the role mapping table and Bicep pattern.
 
 After each round: run `bicep build` to catch errors early.
 
@@ -276,7 +276,7 @@ Run validation directly:
 
 After templates pass validation, generate the runtime diagram:
 
-1. Write `generated-scenarios/{project}/04-runtime-diagram.py` (azure-diagrams-style, reflects the actual deployed topology)
+1. Write `generated-scenarios/{project}/04-runtime-diagram.py` (az-azure-diagrams-style, reflects the actual deployed topology)
 2. Execute the script: `python generated-scenarios/{project}/04-runtime-diagram.py`
 3. Verify `generated-scenarios/{project}/04-runtime-diagram.png` exists on disk
 4. **Delete** `generated-scenarios/{project}/04-runtime-diagram.py` — the source file is not needed after the PNG is produced

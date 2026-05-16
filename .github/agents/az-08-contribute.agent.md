@@ -1,5 +1,5 @@
 ---
-name: 08-Contribute
+name: az-08-Contribute
 description: Publishes a completed scenario to a standalone repo in the contributor's GitHub account and registers it in the upstream project's scenario registry via a cross-fork PR.
 model: "Claude Opus 4.6"
 user-invokable: true
@@ -52,7 +52,7 @@ scenario registry via a cross-fork PR.
 > [!CAUTION]
 > **Before performing ANY operations**, you MUST read:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, artifact naming, azure.yaml conventions)
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, artifact naming, azure.yaml conventions)
 
 ## DO / DON'T
 

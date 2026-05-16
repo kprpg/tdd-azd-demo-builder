@@ -1,6 +1,6 @@
 ---
 description: "Scaffold a .NET 10 C# sample web application with industry-specific local data for the demo workload scenario."
-agent: "05b-Development"
+agent: "az-05b-Development"
 model: "Claude Opus 4.6"
 tools:
   - read/readFile
@@ -29,9 +29,9 @@ configuration.
 
 - `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
 - `generated-scenarios/${input:projectName}/infra/` must contain validated Bicep templates
-- Read `.github/skills/SKILL.md` for naming conventions and defaults
-- Read `.github/skills/webapp-development/SKILL.md` for .NET 10 patterns
-- Read `.github/instructions/dotnet-webapp.instructions.md` for coding standards
+- Read `.github/skills/az-consolidated/SKILL.md` for naming conventions and defaults
+- Read `.github/skills/az-webapp-development/SKILL.md` for .NET 10 patterns
+- Read `.github/instructions/az-dotnet-webapp.instructions.md` for coding standards
 - Output saved to `generated-scenarios/${input:projectName}/src/{ProjectName}.Web/`
 
 ## Inputs

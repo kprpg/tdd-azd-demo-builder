@@ -43,7 +43,7 @@ apt-get install graphviz  # Ubuntu/Debian
 ## Contents
 
 ```text
-azure-diagrams/
+az-azure-diagrams/
 ├── SKILL.md                              # Main skill instructions
 ├── README.md                             # This file
 ├── references/

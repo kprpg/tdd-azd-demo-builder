@@ -1,5 +1,5 @@
 ---
-name: 04-Diagrammer
+name: az-04-Diagrammer
 model: "GPT-5.3-Codex"
 description: "RETIRED FROM MAIN WORKFLOW. Architecture diagrams are now generated inline by the Bicep agent (04-runtime-diagram.png). This agent is kept for standalone/ad-hoc diagram generation only and is not invoked by the Conductor."
 user-invokable: true
@@ -84,14 +84,14 @@ tools:
 
 **Before doing ANY work**, read these skills:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, diagrams, Bicep patterns, artifacts, demo guide)
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, diagrams, Bicep patterns, artifacts, demo guide)
 
 ## DO / DON'T
 
 ### DO
 
 - ✅ Read `02-architecture-assessment.md` BEFORE generating any design artifact
-- ✅ Use the `azure-diagrams` skill for Python architecture diagrams
+- ✅ Use the `az-azure-diagrams` skill for Python architecture diagrams
 - ✅ Use the `SKILLS.md` skill file for any details
 - ✅ Generate **both** the architecture diagram AND the runtime flow diagram — both are required
 - ✅ Save architecture diagram to `generated-scenarios/{project}/03-architect-diagram.py`
@@ -122,7 +122,7 @@ If missing, STOP and request handoff to Architect agent.
 
 1. Read `02-architecture-assessment.md` for resource list, boundaries, and flows
 2. Read `01-requirements.md` for business-critical paths and actor context
-3. Generate `generated-scenarios/{project}/03-architect-diagram.py` using the azure-diagrams contract
+3. Generate `generated-scenarios/{project}/03-architect-diagram.py` using the az-azure-diagrams contract
 4. Execute `python3 generated-scenarios/{project}/03-architect-diagram.py`
 5. Validate quality gate score (>=9/10); regenerate once if below threshold
 6. Verify `03-architect-diagram.png` exists on disk

@@ -1,6 +1,6 @@
 ---
 description: "Generate a Python architecture diagram for an Azure project"
-agent: "Design"
+agent: "az-04-Diagrammer"
 model: "GPT-5.3-Codex"
 tools:
   - read/readFile
@@ -19,12 +19,12 @@ visualizes all Azure resources, network topology, and data flow for the project.
 
 Read the architecture assessment, extract all Azure resources and their
 relationships, and generate a Python script that produces a PNG architecture
-diagram following the azure-diagrams skill conventions.
+diagram following the az-azure-diagrams skill conventions.
 
 ## Scope & Preconditions
 
 - `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
-- Read `.github/skills/SKILL.md` for diagram conventions, icon catalog, and naming conventions
+- Read `.github/skills/az-consolidated/SKILL.md` for diagram conventions, icon catalog, and naming conventions
 - Use the `diagrams` Python library (pre-installed in dev container)
 
 ## Inputs
@@ -49,7 +49,7 @@ full resource list, network topology, and data flow paths.
 
 ### Step 3: Generate Python Script
 
-Follow the azure-diagrams skill template structure:
+Follow the az-azure-diagrams skill template structure:
 
 - File header with project metadata
 - Diagram context with project name as title

@@ -15,10 +15,10 @@ without missing context or requiring multiple iterations.
 Before creating ANY output files or making changes, agents MUST:
 
 - [ ] **Search workspace** for existing patterns (`generated-scenarios/`, similar projects, templates)
-- [ ] **Read relevant templates** in `.github/skills/azure-artifacts/templates/` for output structure
+- [ ] **Read relevant templates** in `.github/skills/az-azure-artifacts/templates/` for output structure
 - [ ] **Query documentation** via MCP tools (Azure docs, best practices)
 - [ ] **Validate inputs** - confirm all required artifacts from previous steps exist
-- [ ] **Check consolidated skill** in `.github/skills/SKILL.md`
+- [ ] **Check consolidated skill** in `.github/skills/az-consolidated/SKILL.md`
 - [ ] **Achieve 80% confidence** before proceeding to implementation
 
 ## Research Workflow Pattern
@@ -118,5 +118,5 @@ This research-first pattern integrates with the 7-step workflow:
 3. Each step should query relevant Azure documentation
 4. Each step should achieve 80% confidence before proceeding
 
-See [Consolidated Skill](../skills/SKILL.md) for the complete
+See [Consolidated Skill](../skills/az-consolidated/SKILL.md) for the complete
 research requirements specification.

@@ -1,6 +1,6 @@
 ---
 description: "Assess architecture using Well-Architected Framework with cost estimates"
-agent: "Architect"
+agent: "az-03-Architect"
 model: "Claude Opus 4.6"
 tools:
   - read/readFile
@@ -31,7 +31,7 @@ Pricing MCP tools.
 ## Scope & Preconditions
 
 - `generated-scenarios/${input:projectName}/01-requirements.md` must exist
-- Read `.github/skills/SKILL.md` for consolidated configuration, templates, and patterns
+- Read `.github/skills/az-consolidated/SKILL.md` for consolidated configuration, templates, and patterns
 - Use Azure Pricing MCP tools with EXACT service names from the skill
 - Search Microsoft docs for each Azure service recommendation
 

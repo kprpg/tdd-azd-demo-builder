@@ -108,8 +108,8 @@ action. This is a convention enforced in each agent's body:
 ```markdown
 ## MANDATORY: Read Skills First
 
-1. **Read** `.github/skills/SKILL.md`
-2. **Read** `.github/skills/azure-artifacts/templates/04-implementation-plan.template.md`
+1. **Read** `.github/skills/az-consolidated/SKILL.md`
+2. **Read** `.github/skills/az-azure-artifacts/templates/04-implementation-plan.template.md`
 ```
 
 The agent uses the `read_file` tool to load skill content into its context window.
@@ -160,15 +160,15 @@ the Bicep instruction in the context. Examples:
 
 **Instructions in this repo:**
 
-| File                                        | `applyTo`             | Purpose                                             |
-| ------------------------------------------- | --------------------- | --------------------------------------------------- |
-| `bicep-code-best-practices.instructions.md` | `**/*.bicep`          | AVM-first, naming, security defaults, deployer RBAC |
-| `markdown.instructions.md`                  | `**/*.md`             | Line length, heading hierarchy, callout styles      |
-| `python.instructions.md`                    | `**/*.py`             | Ruff formatting, type hints, import ordering        |
-| `powershell.instructions.md`                | `**/*.ps1, **/*.psm1` | Comment-based help, approved verbs                  |
-| `code-commenting.instructions.md`           | `**`                  | Minimal-comment philosophy across all languages     |
-| `agent-research-first.instructions.md`      | `**/*.agent.md, ...`  | Enforces research-before-implementation             |
-| `azure-artifacts.instructions.md`           | `**/generated-scenarios/**/*.md` | Template compliance for generated artifacts         |
+| File                                           | `applyTo`             | Purpose                                             |
+| ---------------------------------------------- | --------------------- | --------------------------------------------------- |
+| `az-bicep-code-best-practices.instructions.md` | `**/*.bicep`          | AVM-first, naming, security defaults, deployer RBAC |
+| `az-markdown.instructions.md`                  | `**/*.md`             | Line length, heading hierarchy, callout styles      |
+| `az-python.instructions.md`                    | `**/*.py`             | Ruff formatting, type hints, import ordering        |
+| `az-powershell.instructions.md`                | `**/*.ps1, **/*.psm1` | Comment-based help, approved verbs                  |
+| `az-code-commenting.instructions.md`           | `**`                  | Minimal-comment philosophy across all languages     |
+| `az-agent-research-first.instructions.md`      | `**/*.agent.md, ...`  | Enforces research-before-implementation             |
+| `az-azure-artifacts.instructions.md`           | `**/generated-scenarios/**/*.md` | Template compliance for generated artifacts         |
 
 ### Prompts (User Messages)
 
@@ -189,7 +189,7 @@ project).
 When you type a message in VS Code Copilot Chat, here is what happens:
 
 ```
-1. User selects an agent (e.g., "01-conductor") and types a prompt
+1. User selects an agent (e.g., "az-01-conductor") and types a prompt
 2. VS Code loads the agent's .agent.md file (front matter + body = system prompt)
 3. VS Code checks which files the agent will touch and auto-injects matching instructions
 4. The agent's body tells it to read specific skills (via read_file tool calls)
@@ -221,7 +221,7 @@ When you type a message in VS Code Copilot Chat, here is what happens:
 ```
 
 **Agent → Skill**: Pull relationship. The agent's Markdown body contains
-explicit instructions like "Read `.github/skills/SKILL.md` before doing
+explicit instructions like "Read `.github/skills/az-consolidated/SKILL.md` before doing
 any work." The agent calls the `read_file` tool to load it.
 
 **Agent → Instruction**: Push relationship. VS Code automatically injects
@@ -313,7 +313,7 @@ The agent system requires specific VS Code settings in `.vscode/settings.json`:
 
 ### Adding a New Artifact Template
 
-1. Create `.github/skills/azure-artifacts/templates/NN-name.template.md`
+1. Create `.github/skills/az-azure-artifacts/templates/NN-name.template.md`
 2. Define the required H2 headings and structure
 3. Reference it in the relevant agent's body ("Read this template before generating output")
 
@@ -322,11 +322,11 @@ The agent system requires specific VS Code settings in `.vscode/settings.json`:
 ### How the Bicep Agent Uses All Four
 
 1. **Prompt**: User asks the Conductor to build an Azure scenario
-2. **Agent**: Conductor delegates to `05-Bicep` via `runSubagent`
+2. **Agent**: Conductor delegates to `az-05-Bicep` via `runSubagent`
 3. **Skills**: Bicep agent reads `SKILL.md` for AVM module table, naming
    conventions, security baseline, and deployer RBAC patterns
 4. **Instructions**: When the agent creates `infra/main.bicep`, VS Code
-   auto-injects `bicep-code-best-practices.instructions.md`
+   auto-injects `az-bicep-code-best-practices.instructions.md`
 5. **Templates**: Agent reads `04-implementation-plan.template.md` to
    know the exact H2 structure required for the plan artifact
 
@@ -335,22 +335,22 @@ The agent system requires specific VS Code settings in `.vscode/settings.json`:
 ```
 Conductor receives user prompt
     │
-    ├─ runSubagent("02-Validations", "Parse scenario and generate requirements")
+    ├─ runSubagent("az-02-Validations", "Parse scenario and generate requirements")
     │   └─ Validations agent writes 01-requirements.md
     │
-    ├─ runSubagent("03-Architect", "Assess architecture from 01-requirements.md")
+    ├─ runSubagent("az-03-Architect", "Assess architecture from 01-requirements.md")
     │   └─ Architect agent reads 01-requirements.md, writes 02-architecture-assessment.md
     │
-    ├─ runSubagent("04-Diagrammer", "Generate architecture diagrams")
+    ├─ runSubagent("az-04-Diagrammer", "Generate architecture diagrams")
     │   └─ Diagrammer agent reads 02-*.md, writes 03-architect-diagram.py + .png
     │
-    ├─ runSubagent("05-Bicep", "Generate Bicep templates per 02-*.md")
+    ├─ runSubagent("az-05-Bicep", "Generate Bicep templates per 02-*.md")
     │   └─ Bicep agent reads 02-*.md, writes infra/ + 04-*.md + 05-*.md
     │
-    ├─ runSubagent("06-Deploy", "Deploy via azd up")
+    ├─ runSubagent("az-06-Deploy", "Deploy via azd up")
     │   └─ Deploy agent reads infra/, runs azd, writes 06-deployment-summary.md
     │
-    └─ runSubagent("07-DemoGuide", "Generate demo guide from all artifacts")
+    └─ runSubagent("az-07-DemoGuide", "Generate demo guide from all artifacts")
         └─ DemoGuide agent reads all prior artifacts, writes `generated-scenarios/{project}/`demoguide/demoguide.md
 ```
 
@@ -364,6 +364,6 @@ state is the file system — specifically the `generated-scenarios/{project}/` f
 | Define a new workflow step               | `.github/agents/`                           | `.agent.md`        | User selects or parent delegates |
 | Store reusable domain knowledge          | `.github/skills/`                           | `SKILL.md`         | Agent reads explicitly           |
 | Enforce coding standards for a file type | `.github/instructions/`                     | `.instructions.md` | Auto-injected by `applyTo` glob  |
-| Define artifact structure                | `.github/skills/azure-artifacts/templates/` | `.template.md`     | Agent reads explicitly           |
+| Define artifact structure                | `.github/skills/az-azure-artifacts/templates/` | `.template.md`     | Agent reads explicitly           |
 | Configure agent discovery                | `.vscode/settings.json`                     | JSON               | Always active                    |
 | Provide tool access (MCP servers, etc.)  | `.vscode/mcp.json`                          | JSON               | Always active                    |

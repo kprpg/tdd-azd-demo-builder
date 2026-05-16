@@ -1,5 +1,5 @@
 ---
-name: 03-Architect
+name: az-03-Architect
 description: Evaluates project requirements, recommends Azure services and SKUs, documents trade-offs, and produces architecture assessments for demo and PoC scenarios. References Microsoft documentation for service capabilities and limits.
 model: "Claude Opus 4.6"
 argument-hint: Provide the path to a requirements document or describe the architecture to assess
@@ -85,9 +85,9 @@ Verify these are documented — **auto-default if missing**:
 
 **After prerequisites are confirmed**, read these skills:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, artifacts, Bicep patterns, diagrams, demo guide)
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, artifacts, Bicep patterns, diagrams, demo guide)
 2. **Read** the template file:
-   - `.github/skills/azure-artifacts/templates/02-architecture-assessment.template.md`
+   - `.github/skills/az-azure-artifacts/templates/02-architecture-assessment.template.md`
      Use as structural skeleton.
 3. **Read** `.github/skills/microsoft-docs/SKILL.md` — query official Microsoft docs for service limits and SKU comparisons
 
