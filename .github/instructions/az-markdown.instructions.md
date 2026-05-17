@@ -94,7 +94,7 @@ If Mermaid is used, include a neutral theme directive for dark mode compatibilit
 **MANDATORY for all workflow artifacts:**
 
 When generating workflow artifacts, agents **MUST** follow the canonical templates in
-`.github/skills/azure-artifacts/templates/`. Key examples:
+`.github/skills/az-azure-artifacts/templates/`. Key examples:
 
 | Artifact                        | Template                                 | Producing Agent |
 | ------------------------------- | ---------------------------------------- | --------------- |
@@ -103,7 +103,7 @@ When generating workflow artifacts, agents **MUST** follow the canonical templat
 | `04-implementation-plan.md`     | `04-implementation-plan.template.md`     | bicep-plan      |
 | `06-deployment-summary.md`      | `06-deployment-summary.template.md`      | 06-Deploy       |
 
-All 15 artifact types have corresponding templates. See `azure-artifacts.instructions.md`
+All 15 artifact types have corresponding templates. See `az-azure-artifacts.instructions.md`
 for the complete heading reference.
 
 **Requirements:**
@@ -123,7 +123,7 @@ for the complete heading reference.
 
 **MANDATORY**: All agent-generated documentation MUST follow the styling standards defined in:
 
-📚 **[Consolidated Skill](../skills/SKILL.md)**
+📚 **[Consolidated Skill](../skills/az-consolidated/SKILL.md)**
 
 ### Quick Reference
 

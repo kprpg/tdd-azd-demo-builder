@@ -1,5 +1,5 @@
 ---
-name: 06-Deploy
+name: az-06-Deploy
 description: Deploys Azure infrastructure using azd, runs what-if analysis, validates deployment, and produces a deployment summary. Bridges the gap between Bicep code generation and demo guide creation.
 model: "Claude Opus 4.6"
 user-invokable: true
@@ -93,10 +93,10 @@ resources, and produces a deployment summary artifact.
 > [!CAUTION]
 > **Before doing ANY work**, read these skills:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, AVM, Bicep patterns, artifacts)
-2. **Read** `.github/skills/azure-deploy/SKILL.md` — deployment patterns, `azd` usage, rollback procedures
-3. **Read** `.github/skills/azure-validate/SKILL.md` — pre-deployment validation, preflight checks
-4. **Read** `.github/instructions/bicep-code-best-practices.instructions.md` — deployment script requirements
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, AVM, Bicep patterns, artifacts)
+2. **Read** `.github/skills/az-azure-deploy/SKILL.md` — deployment patterns, `azd` usage, rollback procedures
+3. **Read** `.github/skills/az-azure-validate/SKILL.md` — pre-deployment validation, preflight checks
+4. **Read** `.github/instructions/az-bicep-code-best-practices.instructions.md` — deployment script requirements
 
 ## DO / DON'T
 

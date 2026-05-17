@@ -37,7 +37,7 @@ All outputs → `generated-scenarios/{project}/`. Context flows via artifact fil
 | `microsoft-code-reference`    | Verify SDK methods and find working code samples (requires Learn MCP) |
 | `golden-principles`           | Core operating principles for agent behavior                          |
 
-Agents read the consolidated skill via: **"Read `.github/skills/SKILL.md`"** in their body.
+Agents read the consolidated skill via: **"Read `.github/skills/az-consolidated/SKILL.md`"** in their body.
 
 ## Chat Triggers
 
@@ -57,7 +57,7 @@ See the root `AGENTS.md` for full conventions. Summary of VS Code-specific overr
 
 - **AVM-first**: Always prefer Azure Verified Modules over raw Bicep
 
-Full details in `.github/skills/SKILL.md`.
+Full details in `.github/skills/az-consolidated/SKILL.md`.
 
 ## Key Files
 

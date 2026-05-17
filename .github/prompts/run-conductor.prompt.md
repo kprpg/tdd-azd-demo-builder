@@ -1,6 +1,6 @@
 ---
 description: "Run the full Azure infrastructure workflow end-to-end"
-agent: "01-conductor"
+agent: "az-01-conductor"
 model: "Claude Opus 4.6"
 tools:
   - agent

@@ -10,12 +10,12 @@ applyTo: "**"
 Language-specific instruction files take precedence over these general
 guidelines. In particular:
 
-- **C# / .NET** (`dotnet.instructions.md` if present): use XML doc
+- **C# / .NET** (`az-dotnet-webapp.instructions.md` if present): use XML doc
   comments (`/// <summary>`) on all public types and members.
-- **PowerShell** (`powershell.instructions.md`): always include
+- **PowerShell** (`az-powershell.instructions.md`): always include
   comment-based help (`.SYNOPSIS`, `.DESCRIPTION`, `.EXAMPLE`) on
   public functions.
-- **Bicep** (`bicep-code-best-practices.instructions.md`): always use
+- **Bicep** (`az-bicep-code-best-practices.instructions.md`): always use
   `@description` annotations on parameters, variables, and outputs.
 - **Shell** (`shell.instructions.md`): include a header comment
   explaining the script's purpose.

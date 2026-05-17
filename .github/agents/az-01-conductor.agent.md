@@ -1,19 +1,19 @@
 ---
-name: 01-conductor
+name: az-01-conductor
 description: Orchestrates the Azure demo builder workflow end-to-end, coordinating specialized agents (Validation, Architect, Design, Bicep, Development, Deploy, DemoGuide) through a seven-step development cycle with automatic handoffs.
 model: "Claude Opus 4.6"
 argument-hint: Provide a scenario description for the Azure infrastructure project you want to build
 user-invokable: true
 agents:
   [
-    "02-Validations",
-    "03-Architect",
-    "04-Diagrammer",
-    "05-Bicep",
-    "05b-Development",
-    "06-Deploy",
-    "07-DemoGuide",
-    "08-Contribute",
+    "az-02-Validations",
+    "az-03-Architect",
+    "az-04-Diagrammer",
+    "az-05-Bicep",
+    "az-05b-Development",
+    "az-06-Deploy",
+    "az-07-DemoGuide",
+    "az-08-Contribute",
   ]
 tools:
   [
@@ -88,7 +88,7 @@ Conductor for the Azure demo builder workflow.
 
 **After deriving the project name**, read:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, artifacts, Bicep patterns, diagrams, demo guide)
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, artifacts, Bicep patterns, diagrams, demo guide)
 
 ## Core Principles
 
@@ -237,7 +237,7 @@ Would you like to contribute this scenario to the project?
   2. No  — keep the scenario local only
 ```
 
-- If **yes**: delegate to the `08-Contribute` agent with the project folder name.
+- If **yes**: delegate to the `az-08-Contribute` agent with the project folder name.
 - If **no**: mark the workflow complete.
 
 > [!NOTE]

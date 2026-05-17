@@ -135,22 +135,22 @@ The agent will:
 ```
 .github/
 ├── agents/                    # Agent definitions (one per workflow step)
-│   ├── 01-conductor.agent.md
-│   ├── 02-validation.agent.md
-│   ├── 03-architect.agent.md
-│   ├── 04-diagrammer.agent.md
-│   ├── 05-bicep.agent.md
-│   ├── 05b-development.agent.md
-│   ├── 06-deploy.agent.md
-│   ├── 07-demoguide.agent.md
-│   └── 08-contribute.agent.md
+│   ├── az-01-conductor.agent.md
+│   ├── az-02-validation.agent.md
+│   ├── az-03-architect.agent.md
+│   ├── az-04-diagrammer.agent.md
+│   ├── az-05-bicep.agent.md
+│   ├── az-05b-development.agent.md
+│   ├── az-06-deploy.agent.md
+│   ├── az-07-demoguide.agent.md
+│   └── az-08-contribute.agent.md
 ├── instructions/              # File-type coding standards (Bicep, Markdown, Python, etc.)
 └── skills/                    # Reusable knowledge consumed by agents
-    ├── SKILL.md               # Consolidated skill (defaults, AVM, patterns, diagrams)
-    ├── azure-artifacts/       # Artifact templates
-    ├── azure-deploy/          # Deployment patterns
-    ├── azure-diagrams/        # Diagram generation guides
-    └── azure-validate/        # Pre/post deployment validation
+    ├── az-consolidated/       # Consolidated skill (defaults, AVM, patterns, diagrams)
+    ├── az-azure-artifacts/    # Artifact templates
+    ├── az-azure-deploy/       # Deployment patterns
+    ├── az-azure-diagrams/     # Diagram generation guides
+    └── az-azure-validate/     # Pre/post deployment validation
 
 generated-scenarios/                      # Generated demo projects (one folder per scenario)
 ├── webvm-sqlvm-bastion-fw/    # Example: VMs + Bastion + Firewall

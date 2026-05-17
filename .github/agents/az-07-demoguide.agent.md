@@ -1,5 +1,5 @@
 ---
-name: 07-DemoGuide
+name: az-07-DemoGuide
 description: Produces audience-aware demo guides, step-by-step runbooks, and presentation materials from deployed Azure infrastructure. Validates environment readiness, generates talking points, and includes contingency playbooks for live demonstrations.
 model: "GPT-5.3-Codex"
 user-invokable: true
@@ -73,7 +73,7 @@ with talking points, and produces contingency playbooks for live presentations.
 > [!CAUTION]
 > **Before generating ANY content**, you MUST read these skills in order:
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, artifacts, demo guide patterns, audience personas, contingency templates)
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, artifacts, demo guide patterns, audience personas, contingency templates)
 
 ## DO / DON'T
 

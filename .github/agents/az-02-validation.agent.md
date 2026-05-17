@@ -1,5 +1,5 @@
 ---
-name: 02-Validations
+name: az-02-Validations
 model: "Claude Opus 4.6"
 description: Gathers and validates Azure infrastructure project requirements by parsing the user's scenario description into a structured requirements document covering business context, workload patterns, service recommendations, and security constraints.
 argument-hint: Describe the Azure workload, including industry, scale, and key objectives
@@ -162,10 +162,10 @@ infer it from the scenario and document assumptions.
 
 ### Read Skills (ONLY NOW — not before)
 
-1. **Read** `.github/skills/SKILL.md` — consolidated skill (defaults, artifacts, Bicep patterns, diagrams, demo guide)
-2. **Read** `.github/skills/azure-artifacts/templates/01-requirements.template.md`
+1. **Read** `.github/skills/az-consolidated/SKILL.md` — consolidated skill (defaults, artifacts, Bicep patterns, diagrams, demo guide)
+2. **Read** `.github/skills/az-azure-artifacts/templates/01-requirements.template.md`
    — use as structural skeleton (replicate badges, TOC, navigation, attribution)
-3. **Read** `.github/skills/azure-artifacts/templates/PROJECT-README.template.md`
+3. **Read** `.github/skills/az-azure-artifacts/templates/PROJECT-README.template.md`
    — project README template (mandatory first artifact for every new project)
 
 These skills are your single source of truth. Do NOT use hardcoded values.

@@ -175,7 +175,7 @@ resource deployerKvRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = i
 | Event Hubs        | Event Hubs Data Owner         | Send/receive events                       |
 | App Configuration | App Config Data Owner         | Read/write configuration values           |
 
-See `.github/skills/SKILL.md` → "Deployer Data Plane Access" for full role ID table.
+See `.github/skills/az-consolidated/SKILL.md` → "Deployer Data Plane Access" for full role ID table.
 
 ## Diagnostic Settings Pattern
 

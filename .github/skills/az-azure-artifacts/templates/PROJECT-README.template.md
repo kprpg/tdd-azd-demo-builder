@@ -95,7 +95,7 @@ azd up
 
 ![Architecture Diagram](./{diagram-filename})
 
-_Generated with [azure-diagrams](../../.github/skills/SKILL.md) skill_
+_Generated with [az-azure-diagrams](../../.github/skills/az-consolidated/SKILL.md) skill_
 
 </div>
 <!-- End diagram block -->

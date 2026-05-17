@@ -1,7 +1,7 @@
 ```prompt
 ---
 description: "Generate an audience-aware demo guide for a deployed Azure project"
-agent: "07-DemoGuide"
+agent: "az-07-DemoGuide"
 model: "GPT-5.3-Codex"
 tools:
   - read/readFile
@@ -33,7 +33,7 @@ follow to deliver a successful live demonstration.
 - `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
 - `generated-scenarios/${input:projectName}/05-implementation-reference.md` should exist (or `04-implementation-plan.md` at minimum)
 - `generated-scenarios/${input:projectName}/06-deployment-summary.md` should exist (deployed resources and outputs feed the demo guide)
-- Read `.github/skills/SKILL.md` for naming conventions, template H2 structure, and demo patterns/personas
+- Read `.github/skills/az-consolidated/SKILL.md` for naming conventions, template H2 structure, and demo patterns/personas
 - Output saved to `generated-scenarios/${input:projectName}/demoguide/demoguide.md`
 - Include Playwright MCP generated screenshots of the different demo steps; store these in `generated-scenarios/${input:projectName}/demoguide/images/` and reference them in the demoguide.md. To make this possible, prompt the user for an authenticated Playwright browser session. Use that session to loop through the demo steps.
 

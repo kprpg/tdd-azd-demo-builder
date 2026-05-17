@@ -1,6 +1,6 @@
 ---
 description: "Plan governance-aware infrastructure and generate production-ready Bicep templates, following the Azure Developer CLI (AZD framework) with a focus on Azure Verified Modules (AVM) and policy compliance."
-agent: "05-Bicep"
+agent: "az-05-Bicep"
 model: "GPT-5.3-Codex"
 tools:
   - read/readFile
@@ -27,7 +27,7 @@ Bicep modules with security baselines and automated validation.
 ## Scope & Preconditions
 
 - `generated-scenarios/${input:projectName}/02-architecture-assessment.md` must exist
-- Read `.github/skills/SKILL.md` for naming, tags, AVM, security, templates, and Bicep patterns
+- Read `.github/skills/az-consolidated/SKILL.md` for naming, tags, AVM, security, templates, and Bicep patterns
 - Templates saved to `generated-scenarios/${input:projectName}/infra/` and compatible with `azd provision`
 
 ## Inputs

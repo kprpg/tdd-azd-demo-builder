@@ -569,7 +569,7 @@ with Cluster("rg-app-prod"):
 ### Project Scenario README
 
 Every project in `generated-scenarios/{project}/` **MUST** have a `README.md`.
-Template: `.github/skills/azure-artifacts/templates/PROJECT-README.template.md`
+Template: `.github/skills/az-azure-artifacts/templates/PROJECT-README.template.md`
 
 After saving step artifacts, update README: mark step complete, add artifact files,
 update date and progress percentage (each step ≈ 14%).
@@ -651,7 +651,7 @@ update date and progress percentage (each step ≈ 14%).
 
 ## 7. Webapp Development Patterns
 
-For full details, see `.github/skills/webapp-development/SKILL.md`.
+For full details, see `.github/skills/az-webapp-development/SKILL.md`.
 
 ### When to Generate a Sample Webapp
 
