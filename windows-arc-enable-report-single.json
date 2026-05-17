@@ -1,0 +1,9 @@
+﻿{
+    "VmName":  "vm-win-01-arcdemosdev",
+    "Result":  "success",
+    "Verification":  "verified",
+    "VerificationDetails":  "Connected machine \u0027vm-win-01-arcdemosdev\u0027 reported status \u0027Connected\u0027 on attempt 1.",
+    "Details":  {
+
+                }
+}

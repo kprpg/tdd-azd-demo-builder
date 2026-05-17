@@ -1,0 +1,98 @@
+﻿[
+    {
+        "VmName":  "vm-win-01-arcdemosdev",
+        "Result":  "failed",
+        "Verification":  "not-verified",
+        "VerificationDetails":  "Connected machine resource not observed within verification window.",
+        "Details":  [
+                        "{",
+                        "  \"value\": [",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdOut/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    },",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdErr/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    }",
+                        "  ]",
+                        "}"
+                    ]
+    },
+    {
+        "VmName":  "vm-win-02-arcdemosdev",
+        "Result":  "failed",
+        "Verification":  "not-verified",
+        "VerificationDetails":  "Connected machine resource not observed within verification window.",
+        "Details":  [
+                        "{",
+                        "  \"value\": [",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdOut/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    },",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdErr/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    }",
+                        "  ]",
+                        "}"
+                    ]
+    },
+    {
+        "VmName":  "vm-win-03-arcdemosdev",
+        "Result":  "failed",
+        "Verification":  "not-verified",
+        "VerificationDetails":  "Connected machine resource not observed within verification window.",
+        "Details":  [
+                        "{",
+                        "  \"value\": [",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdOut/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    },",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdErr/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    }",
+                        "  ]",
+                        "}"
+                    ]
+    },
+    {
+        "VmName":  "vm-win-04-arcdemosdev",
+        "Result":  "failed",
+        "Verification":  "not-verified",
+        "VerificationDetails":  "Connected machine resource not observed within verification window.",
+        "Details":  [
+                        "{",
+                        "  \"value\": [",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdOut/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    },",
+                        "    {",
+                        "      \"code\": \"ComponentStatus/StdErr/succeeded\",",
+                        "      \"displayStatus\": \"Provisioning succeeded\",",
+                        "      \"level\": \"Info\",",
+                        "      \"message\": \"\"",
+                        "    }",
+                        "  ]",
+                        "}"
+                    ]
+    }
+]
