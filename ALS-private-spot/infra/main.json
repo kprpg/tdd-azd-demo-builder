@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "6217374327865111889"
+      "templateHash": "1099845442016981518"
     }
   },
   "parameters": {
@@ -266,7 +266,6 @@
       },
       "properties": {
         "dnsPrefix": "[format('aks-{0}', take(variables('uniqueSuffix'), 8))]",
-        "kubernetesVersion": "",
         "nodeResourceGroup": "[format('rg-{0}-nodes-{1}', parameters('projectName'), parameters('environment'))]",
         "enableRBAC": true,
         "agentPoolProfiles": [

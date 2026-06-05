@@ -64,8 +64,12 @@ if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
 Write-Host "Preparing azd environment: $EnvironmentName"
 Push-Location $scenarioRoot
 try {
-    azd env select $EnvironmentName 2>$null | Out-Null
+    $selectOutput = azd env select $EnvironmentName 2>&1
     if ($LASTEXITCODE -ne 0) {
+        if ($selectOutput) {
+            Write-Host ($selectOutput -join [Environment]::NewLine)
+        }
+        Write-Host "Environment '$EnvironmentName' not found. Creating it..."
         azd env new $EnvironmentName | Out-Null
     }
 

@@ -218,7 +218,6 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2024-09-01' = {
   }
   properties: {
     dnsPrefix: 'aks-${take(uniqueSuffix, 8)}'
-    kubernetesVersion: ''
     nodeResourceGroup: 'rg-${projectName}-nodes-${environment}'
     enableRBAC: true
     agentPoolProfiles: [
