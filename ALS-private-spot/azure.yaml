@@ -1,0 +1,6 @@
+name: tdd-azd-als-private-spot
+metadata:
+  template: tdd-azd-als-private-spot@1.0.0
+infra:
+  provider: bicep
+  path: ./infra
