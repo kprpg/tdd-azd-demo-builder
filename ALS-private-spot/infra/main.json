@@ -1,0 +1,340 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.8.12551",
+      "templateHash": "6217374327865111889"
+    }
+  },
+  "parameters": {
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "Deployment environment name from AZURE_ENV_NAME."
+      }
+    },
+    "projectName": {
+      "type": "string",
+      "defaultValue": "als-private-spot",
+      "metadata": {
+        "description": "Project slug used in resource names."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure region for resources."
+      }
+    },
+    "jumpboxSshPublicKey": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "SSH public key for jumpbox VM."
+      }
+    },
+    "jumpboxAdminUsername": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "minLength": 1,
+      "metadata": {
+        "description": "Admin username for jumpbox VM."
+      }
+    },
+    "systemNodeVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_B2s",
+      "metadata": {
+        "description": "VM size for AKS system node pool."
+      }
+    },
+    "userSpotNodeVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_B2s",
+      "metadata": {
+        "description": "VM size for AKS Spot user node pool."
+      }
+    }
+  },
+  "variables": {
+    "uniqueSuffix": "[uniqueString(resourceGroup().id)]",
+    "tags": {
+      "Environment": "[parameters('environment')]",
+      "ManagedBy": "Bicep",
+      "Project": "[parameters('projectName')]",
+      "SecurityControl": "Ignore"
+    },
+    "vnetName": "[format('vnet-{0}-{1}', parameters('projectName'), parameters('environment'))]",
+    "aksSubnetName": "[format('snet-aks-{0}', parameters('environment'))]",
+    "bastionSubnetName": "AzureBastionSubnet",
+    "jumpboxSubnetName": "[format('snet-jumpbox-{0}', parameters('environment'))]",
+    "bastionPipName": "[format('pip-bastion-{0}-{1}', parameters('environment'), take(variables('uniqueSuffix'), 5))]",
+    "bastionName": "[format('bas-{0}-{1}', parameters('projectName'), parameters('environment'))]",
+    "jumpboxNicName": "[format('nic-jumpbox-{0}', parameters('environment'))]",
+    "jumpboxName": "[format('vm-jumpbox-{0}', parameters('environment'))]",
+    "aksName": "[format('aks-{0}-{1}', parameters('projectName'), parameters('environment'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/tags",
+      "apiVersion": "2024-03-01",
+      "name": "default",
+      "properties": {
+        "tags": "[variables('tags')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2024-05-01",
+      "name": "[variables('vnetName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.20.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('aksSubnetName')]",
+            "properties": {
+              "addressPrefix": "10.20.1.0/24"
+            }
+          },
+          {
+            "name": "[variables('bastionSubnetName')]",
+            "properties": {
+              "addressPrefix": "10.20.2.0/26"
+            }
+          },
+          {
+            "name": "[variables('jumpboxSubnetName')]",
+            "properties": {
+              "addressPrefix": "10.20.3.0/24"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2024-05-01",
+      "name": "[variables('bastionPipName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/bastionHosts",
+      "apiVersion": "2024-05-01",
+      "name": "[variables('bastionName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "bastion-ipconfig",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('bastionSubnetName'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('bastionPipName'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('bastionPipName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2024-05-01",
+      "name": "[variables('jumpboxNicName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('jumpboxSubnetName'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-07-01",
+      "name": "[variables('jumpboxName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2s"
+        },
+        "osProfile": {
+          "computerName": "[variables('jumpboxName')]",
+          "adminUsername": "[parameters('jumpboxAdminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[format('/home/{0}/.ssh/authorized_keys', parameters('jumpboxAdminUsername'))]",
+                  "keyData": "[parameters('jumpboxSshPublicKey')]"
+                }
+              ]
+            }
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "0001-com-ubuntu-server-jammy",
+            "sku": "22_04-lts",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('jumpboxNicName'))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('jumpboxNicName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2024-07-01",
+      "name": "[format('{0}/{1}', variables('jumpboxName'), 'install-aks-tools')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.1",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "commandToExecute": "bash -c \"apt-get update && apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg && curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az aks install-cli\""
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('jumpboxName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2024-09-01",
+      "name": "[variables('aksName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "sku": {
+        "name": "Base",
+        "tier": "Free"
+      },
+      "properties": {
+        "dnsPrefix": "[format('aks-{0}', take(variables('uniqueSuffix'), 8))]",
+        "kubernetesVersion": "",
+        "nodeResourceGroup": "[format('rg-{0}-nodes-{1}', parameters('projectName'), parameters('environment'))]",
+        "enableRBAC": true,
+        "agentPoolProfiles": [
+          {
+            "name": "sysnp",
+            "mode": "System",
+            "count": 1,
+            "vmSize": "[parameters('systemNodeVmSize')]",
+            "osType": "Linux",
+            "type": "VirtualMachineScaleSets",
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('aksSubnetName'))]",
+            "enableAutoScaling": false
+          },
+          {
+            "name": "spotnp",
+            "mode": "User",
+            "minCount": 0,
+            "maxCount": 2,
+            "count": 1,
+            "vmSize": "[parameters('userSpotNodeVmSize')]",
+            "osType": "Linux",
+            "type": "VirtualMachineScaleSets",
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('aksSubnetName'))]",
+            "enableAutoScaling": true,
+            "scaleSetPriority": "Spot",
+            "scaleSetEvictionPolicy": "Delete",
+            "spotMaxPrice": -1
+          }
+        ],
+        "networkProfile": {
+          "networkPlugin": "azure",
+          "networkPluginMode": "overlay",
+          "podCidr": "10.244.0.0/16",
+          "serviceCidr": "10.0.0.0/16",
+          "dnsServiceIP": "10.0.0.10",
+          "outboundType": "loadBalancer"
+        },
+        "apiServerAccessProfile": {
+          "enablePrivateCluster": true,
+          "privateDNSZone": "system",
+          "enablePrivateClusterPublicFQDN": false
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "aksClusterName": {
+      "type": "string",
+      "value": "[variables('aksName')]"
+    },
+    "bastionName": {
+      "type": "string",
+      "value": "[variables('bastionName')]"
+    },
+    "jumpboxVmName": {
+      "type": "string",
+      "value": "[variables('jumpboxName')]"
+    },
+    "jumpboxUser": {
+      "type": "string",
+      "value": "[parameters('jumpboxAdminUsername')]"
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[resourceGroup().name]"
+    }
+  }
+}
